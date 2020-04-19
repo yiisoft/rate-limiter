@@ -23,7 +23,6 @@ Installation
 ## General usage
 
 ```php
-
 use Yiisoft\Yii\RateLimiter\Middleware;
 use Yiisoft\Yii\RateLimiter\Counter;
 use Yiisoft\Cache\ArrayCache;
@@ -34,6 +33,5 @@ $counter = new Counter(2, 5, $cache);
 $responseFactory = new Psr17Factory();
 
 $middleware = new Middleware($counter, $responseFactory);
-
 ```
 
