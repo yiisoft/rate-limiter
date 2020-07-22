@@ -24,10 +24,10 @@ final class Middleware implements MiddlewareInterface
 
     private ResponseFactoryInterface $responseFactory;
 
-    private string $counterId;
+    private ?string $counterId;
 
     /**
-     * @var callable
+     * @var callable|null
      */
     private $counterIdCallback;
 
@@ -92,8 +92,8 @@ final class Middleware implements MiddlewareInterface
     private function addHeaders(ResponseInterface $response, CounterState $result): ResponseInterface
     {
         return $response
-            ->withHeader('X-Rate-Limit-Limit', $result->getLimit())
-            ->withHeader('X-Rate-Limit-Remaining', $result->getRemaining())
-            ->withHeader('X-Rate-Limit-Reset', $result->getResetTime());
+            ->withHeader('X-Rate-Limit-Limit', (string)$result->getLimit())
+            ->withHeader('X-Rate-Limit-Remaining', (string)$result->getRemaining())
+            ->withHeader('X-Rate-Limit-Reset', (string)$result->getResetTime());
     }
 }
