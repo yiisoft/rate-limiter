@@ -7,7 +7,7 @@ namespace Yiisoft\Yii\RateLimiter;
 use Psr\SimpleCache\CacheInterface;
 
 /**
- * Counter implements generic сell rate limit algorithm (GCRA) that ensures that after reaching the limit futher
+ * Counter implements generic cell rate limit algorithm (GCRA) that ensures that after reaching the limit further
  * increments are distributed equally.
  *
  * @link https://en.wikipedia.org/wiki/Generic_cell_rate_algorithm
