@@ -22,7 +22,7 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": "^7.4",
+        "php": "^7.4|^8.0",
         "yiisoft/http": "1.0.x-dev",
         "psr/simple-cache": "^1.0",
         "psr/http-factory": "^1.0",
@@ -35,8 +35,8 @@
         "nyholm/psr7": "^1.0",
         "yiisoft/cache": "^3.0@dev",
         "infection/infection": "^0.16.3",
-        "phan/phan": "^3.0.2",
-        "phpunit/phpunit": "^9.2"
+        "phan/phan": "^3.0",
+        "phpunit/phpunit": "^9.3"
     },
     "provide": {
         "psr/http-message-implementation": "1.0"
