@@ -21,50 +21,50 @@ final class Counter implements CounterInterface
     private const MILLISECONDS_PER_SECOND = 1000;
 
     /**
-     * @var int period to apply limit to, in milliseconds
+     * @var int period to apply limit to
      */
-    private int $period;
+    private int $periodInMilliseconds;
 
     private int $limit;
 
     /**
-     * @var float maximum interval before next increment, in milliseconds
+     * @var float maximum interval before next increment
      * In GCRA it is known as emission interval.
      */
-    private float $incrementInterval;
+    private float $incrementIntervalInMilliseconds;
 
     private ?string $id = null;
 
     private CacheInterface $storage;
 
-    private int $ttl = self::DEFAULT_TTL;
+    private int $ttlInSeconds = self::DEFAULT_TTL;
 
     /**
      * @var int last increment time
      * In GCRA it's known as arrival time
      */
-    private int $lastIncrementTime;
+    private int $lastIncrementTimeInMilliseconds;
 
     /**
      * @param int $limit maximum number of increments that could be performed before increments are limited
-     * @param int $period period to apply limit to, in seconds
+     * @param int $periodInSeconds period to apply limit to
      * @param CacheInterface $storage
      */
-    public function __construct(int $limit, int $period, CacheInterface $storage)
+    public function __construct(int $limit, int $periodInSeconds, CacheInterface $storage)
     {
         if ($limit < 1) {
             throw new \InvalidArgumentException('The limit must be a positive value.');
         }
 
-        if ($period < 1) {
+        if ($periodInSeconds < 1) {
             throw new \InvalidArgumentException('The period must be a positive value.');
         }
 
         $this->limit = $limit;
-        $this->period = $period * self::MILLISECONDS_PER_SECOND;
+        $this->periodInMilliseconds = $periodInSeconds * self::MILLISECONDS_PER_SECOND;
         $this->storage = $storage;
 
-        $this->incrementInterval = (float)($this->period / $this->limit);
+        $this->incrementIntervalInMilliseconds = (float)($this->periodInMilliseconds / $this->limit);
     }
 
     public function setId(string $id): void
@@ -73,13 +73,13 @@ final class Counter implements CounterInterface
     }
 
     /**
-     * @param int $ttl cache TTL that is used to store counter values
+     * @param int $secondsTTL cache TTL that is used to store counter values
      * Default is one day.
      * Note that period can not exceed TTL.
      */
-    public function setTtl(int $ttl): void
+    public function setTtlInSeconds(int $secondsTTL): void
     {
-        $this->ttl = $ttl;
+        $this->ttlInSeconds = $secondsTTL;
     }
 
     public function getCacheKey(): string
@@ -93,7 +93,7 @@ final class Counter implements CounterInterface
             throw new \LogicException('The counter ID should be set');
         }
 
-        $this->lastIncrementTime = $this->getCurrentTime();
+        $this->lastIncrementTimeInMilliseconds = $this->currentTimeInMilliseconds();
         $theoreticalNextIncrementTime = $this->calculateTheoreticalNextIncrementTime(
             $this->getLastStoredTheoreticalNextIncrementTime()
         );
@@ -114,7 +114,7 @@ final class Counter implements CounterInterface
      */
     private function calculateTheoreticalNextIncrementTime(float $storedTheoreticalNextIncrementTime): float
     {
-        return max($this->lastIncrementTime, $storedTheoreticalNextIncrementTime) + $this->incrementInterval;
+        return max($this->lastIncrementTimeInMilliseconds, $storedTheoreticalNextIncrementTime) + $this->incrementIntervalInMilliseconds;
     }
 
     /**
@@ -123,19 +123,19 @@ final class Counter implements CounterInterface
      */
     private function calculateRemaining(float $theoreticalNextIncrementTime): int
     {
-        $incrementAllowedAt = $theoreticalNextIncrementTime - $this->period;
+        $incrementAllowedAt = $theoreticalNextIncrementTime - $this->periodInMilliseconds;
 
-        return (int)(round($this->lastIncrementTime - $incrementAllowedAt) / $this->incrementInterval);
+        return (int)(round($this->lastIncrementTimeInMilliseconds - $incrementAllowedAt) / $this->incrementIntervalInMilliseconds);
     }
 
     private function getLastStoredTheoreticalNextIncrementTime(): float
     {
-        return $this->storage->get($this->getCacheKey(), (float)$this->lastIncrementTime);
+        return $this->storage->get($this->getCacheKey(), (float)$this->lastIncrementTimeInMilliseconds);
     }
 
     private function storeTheoreticalNextIncrementTime(float $theoreticalNextIncrementTime): void
     {
-        $this->storage->set($this->getCacheKey(), $theoreticalNextIncrementTime, $this->ttl);
+        $this->storage->set($this->getCacheKey(), $theoreticalNextIncrementTime, $this->ttlInSeconds);
     }
 
     /**
@@ -147,7 +147,7 @@ final class Counter implements CounterInterface
         return (int)($theoreticalNextIncrementTime / self::MILLISECONDS_PER_SECOND);
     }
 
-    private function getCurrentTime(): int
+    private function currentTimeInMilliseconds(): int
     {
         return (int)round(microtime(true) * self::MILLISECONDS_PER_SECOND);
     }
