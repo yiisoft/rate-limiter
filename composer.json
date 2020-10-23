@@ -35,7 +35,7 @@
         "nyholm/psr7": "^1.0",
         "yiisoft/cache": "^3.0@dev",
         "infection/infection": "^0.16.3",
-        "phan/phan": "^3.0",
+        "vimeo/psalm": "^4.0",
         "phpunit/phpunit": "^9.3"
     },
     "provide": {

@@ -17,6 +17,7 @@ If too many requests are received from a user within the stated period of the ti
 [![Build Status](https://travis-ci.com/yiisoft/rate-limiter.svg?branch=master)](https://travis-ci.com/yiisoft/rate-limiter)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/yiisoft/rate-limiter/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/yiisoft/rate-limiter/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/yiisoft/rate-limiter/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/yiisoft/rate-limiter/?branch=master)
+[![static analysis](https://github.com/yiisoft/rate-limiter/workflows/static%20analysis/badge.svg)](https://github.com/yiisoft/rate-limiter/actions?query=workflow%3A%22static+analysis%22)
 
 ## Installation
 
@@ -69,8 +70,8 @@ The package tests are checked with [Infection](https://infection.github.io/) mut
 
 ## Static analysis
 
-The code is statically analyzed with [Phan](https://github.com/phan/phan/wiki). To run static analysis:
+The code is statically analyzed with [Psalm](https://psalm.dev/). To run static analysis:
 
 ```php
-./vendor/bin/phan
+./vendor/bin/psalm
 ```
