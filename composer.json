@@ -57,7 +57,9 @@
         }
     },
     "scripts": {
-        "phan": "phan --progress-bar -o analysis.txt"
+        "test": [
+            "phpunit --colors --no-interaction"
+        ]
     },
     "config": {
         "sort-packages": true
