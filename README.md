@@ -14,7 +14,7 @@ If too many requests are received from a user within the stated period of the ti
 
 [![Latest Stable Version](https://poser.pugx.org/yiisoft/rate-limiter/v/stable.png)](https://packagist.org/packages/yiisoft/rate-limiter)
 [![Total Downloads](https://poser.pugx.org/yiisoft/rate-limiter/downloads.png)](https://packagist.org/packages/yiisoft/rate-limiter)
-[![Build Status](https://travis-ci.com/yiisoft/rate-limiter.svg?branch=master)](https://travis-ci.com/yiisoft/rate-limiter)
+[![Build status](https://github.com/yiisoft/rate-limiter/workflows/build/badge.svg)](https://github.com/yiisoft/rate-limiter/actions?query=workflow%3Abuild)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/yiisoft/rate-limiter/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/yiisoft/rate-limiter/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/yiisoft/rate-limiter/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/yiisoft/rate-limiter/?branch=master)
 [![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fyiisoft%2Frate-limiter%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/yiisoft/rate-limiter/master)
