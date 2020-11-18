@@ -34,9 +34,9 @@
     "require-dev": {
         "nyholm/psr7": "^1.0",
         "yiisoft/cache": "^3.0@dev",
-        "infection/infection": "^0.16.3",
-        "vimeo/psalm": "^4.0",
-        "phpunit/phpunit": "^9.3"
+        "phpunit/phpunit": "^9.4",
+        "roave/infection-static-analysis-plugin": "^1.4",
+        "vimeo/psalm": "^4.1"
     },
     "provide": {
         "psr/http-message-implementation": "1.0"
