@@ -109,6 +109,7 @@ final class Counter implements CounterInterface
 
     /**
      * @param float $storedTheoreticalNextIncrementTime
+     *
      * @return float theoretical increment time that would be expected from equally spaced increments at exactly rate limit
      * In GCRA it is known as TAT, theoretical arrival time.
      */
@@ -119,6 +120,7 @@ final class Counter implements CounterInterface
 
     /**
      * @param float $theoreticalNextIncrementTime
+     *
      * @return int the number of remaining requests in the current time period
      */
     private function calculateRemaining(float $theoreticalNextIncrementTime): int
@@ -140,6 +142,7 @@ final class Counter implements CounterInterface
 
     /**
      * @param float $theoreticalNextIncrementTime
+     *
      * @return int timestamp to wait until the rate limit resets
      */
     private function calculateResetAfter(float $theoreticalNextIncrementTime): int

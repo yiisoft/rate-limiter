@@ -78,7 +78,7 @@ final class Middleware implements MiddlewareInterface
     private function generateId(ServerRequestInterface $request): string
     {
         if ($this->counterIdCallback !== null) {
-            return \call_user_func($this->counterIdCallback, $request);
+            return ($this->counterIdCallback)($request);
         }
 
         return $this->counterId ?? $this->generateIdFromRequest($request);

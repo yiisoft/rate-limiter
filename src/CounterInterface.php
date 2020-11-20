@@ -17,6 +17,7 @@ interface CounterInterface
 
     /**
      * Counts one request as done and returns object containing current counter state
+     *
      * @return CounterState
      */
     public function incrementAndGetState(): CounterState;
