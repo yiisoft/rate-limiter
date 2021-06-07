@@ -2,7 +2,7 @@
     <a href="https://github.com/yiisoft" target="_blank">
         <img src="https://yiisoft.github.io/docs/images/yii_logo.svg" height="100px">
     </a>
-    <h1 align="center">Yii RateLimiter Middleware</h1>
+    <h1 align="center">Yii Rate Limiter Middleware</h1>
     <br>
 </p>
 
@@ -15,7 +15,7 @@
 [![static analysis](https://github.com/yiisoft/rate-limiter/workflows/static%20analysis/badge.svg)](https://github.com/yiisoft/rate-limiter/actions?query=workflow%3A%22static+analysis%22)
 [![type-coverage](https://shepherd.dev/github/yiisoft/rate-limiter/coverage.svg)](https://shepherd.dev/github/yiisoft/rate-limiter)
 
-RateLimiter helps to prevent abuse by limiting the number of requests that could be me made consequentially.
+Rate limiter middleware helps to prevent abuse by limiting the number of requests that could be me made consequentially.
 
 For example, you may want to limit the API usage of each user to be at most 100 API calls within a period of 10 minutes.
 If too many requests are received from a user within the stated period of the time, a response with status code 429
@@ -87,7 +87,7 @@ The code is statically analyzed with [Psalm](https://psalm.dev/). To run static 
 
 ## License
 
-The Yii RateLimiter Middleware is free software. It is released under the terms of the BSD License.
+The Yii Rate Limiter Middleware is free software. It is released under the terms of the BSD License.
 Please see [`LICENSE`](./LICENSE.md) for more information.
 
 Maintained by [Yii Software](https://www.yiiframework.com/).
