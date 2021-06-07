@@ -82,7 +82,10 @@ final class Counter implements CounterInterface
      */
     public function getCacheKey(): string
     {
-        /** @psalm-suppress PossiblyNullOperand Remove after fix https://github.com/vimeo/psalm/issues/5906 */
+        if ($this->id === null) {
+            throw new LogicException('The counter ID should be set.');
+        }
+
         return self::ID_PREFIX . $this->id;
     }
 
