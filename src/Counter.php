@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\RateLimiter;
 
+use InvalidArgumentException;
+use LogicException;
 use Psr\SimpleCache\CacheInterface;
 
 /**
@@ -21,14 +23,14 @@ final class Counter implements CounterInterface
     private const MILLISECONDS_PER_SECOND = 1000;
 
     /**
-     * @var int period to apply limit to
+     * @var int Period to apply limit to.
      */
     private int $periodInMilliseconds;
 
     private int $limit;
 
     /**
-     * @var float maximum interval before next increment
+     * @var float Maximum interval before next increment.
      * In GCRA it is known as emission interval.
      */
     private float $incrementIntervalInMilliseconds;
@@ -40,24 +42,24 @@ final class Counter implements CounterInterface
     private int $ttlInSeconds = self::DEFAULT_TTL;
 
     /**
-     * @var int last increment time
-     * In GCRA it's known as arrival time
+     * @var int Last increment time.
+     * In GCRA it's known as arrival time.
      */
     private int $lastIncrementTimeInMilliseconds;
 
     /**
-     * @param int $limit maximum number of increments that could be performed before increments are limited
-     * @param int $periodInSeconds period to apply limit to
+     * @param int $limit Maximum number of increments that could be performed before increments are limited.
+     * @param int $periodInSeconds Period to apply limit to.
      * @param CacheInterface $storage
      */
     public function __construct(int $limit, int $periodInSeconds, CacheInterface $storage)
     {
         if ($limit < 1) {
-            throw new \InvalidArgumentException('The limit must be a positive value.');
+            throw new InvalidArgumentException('The limit must be a positive value.');
         }
 
         if ($periodInSeconds < 1) {
-            throw new \InvalidArgumentException('The period must be a positive value.');
+            throw new InvalidArgumentException('The period must be a positive value.');
         }
 
         $this->limit = $limit;
@@ -73,7 +75,7 @@ final class Counter implements CounterInterface
     }
 
     /**
-     * @param int $secondsTTL cache TTL that is used to store counter values
+     * @param int $secondsTTL Cache TTL that is used to store counter values.
      * Default is one day.
      * Note that period can not exceed TTL.
      */
@@ -82,6 +84,9 @@ final class Counter implements CounterInterface
         $this->ttlInSeconds = $secondsTTL;
     }
 
+    /**
+     * @return string Cache key used to store the next increment time.
+     */
     public function getCacheKey(): string
     {
         return self::ID_PREFIX . $this->id;
@@ -90,7 +95,7 @@ final class Counter implements CounterInterface
     public function incrementAndGetState(): CounterState
     {
         if ($this->id === null) {
-            throw new \LogicException('The counter ID should be set');
+            throw new LogicException('The counter ID should be set.');
         }
 
         $this->lastIncrementTimeInMilliseconds = $this->currentTimeInMilliseconds();
@@ -110,7 +115,7 @@ final class Counter implements CounterInterface
     /**
      * @param float $storedTheoreticalNextIncrementTime
      *
-     * @return float theoretical increment time that would be expected from equally spaced increments at exactly rate limit
+     * @return float Theoretical increment time that would be expected from equally spaced increments at exactly rate limit.
      * In GCRA it is known as TAT, theoretical arrival time.
      */
     private function calculateTheoreticalNextIncrementTime(float $storedTheoreticalNextIncrementTime): float
@@ -121,7 +126,7 @@ final class Counter implements CounterInterface
     /**
      * @param float $theoreticalNextIncrementTime
      *
-     * @return int the number of remaining requests in the current time period
+     * @return int The number of remaining requests in the current time period.
      */
     private function calculateRemaining(float $theoreticalNextIncrementTime): int
     {
@@ -143,7 +148,7 @@ final class Counter implements CounterInterface
     /**
      * @param float $theoreticalNextIncrementTime
      *
-     * @return int timestamp to wait until the rate limit resets
+     * @return int Timestamp to wait until the rate limit resets.
      */
     private function calculateResetAfter(float $theoreticalNextIncrementTime): int
     {

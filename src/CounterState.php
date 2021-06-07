@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Yii\RateLimiter;
 
 /**
- * Rate limiter counter statistics
+ * Rate limiter counter state.
  */
 final class CounterState
 {
@@ -14,9 +14,9 @@ final class CounterState
     private int $reset;
 
     /**
-     * @param int $limit the maximum number of requests allowed with a time period
-     * @param int $remaining the number of remaining requests in the current time period
-     * @param int $reset timestamp to wait until the rate limit resets
+     * @param int $limit The maximum number of requests allowed with a time period.
+     * @param int $remaining The number of remaining requests in the current time period.
+     * @param int $reset Timestamp to wait until the rate limit resets.
      */
     public function __construct(int $limit, int $remaining, int $reset)
     {
@@ -26,7 +26,7 @@ final class CounterState
     }
 
     /**
-     * @return int the maximum number of requests allowed with a time period
+     * @return int The maximum number of requests allowed with a time period.
      */
     public function getLimit(): int
     {
@@ -34,7 +34,7 @@ final class CounterState
     }
 
     /**
-     * @return int the number of remaining requests in the current time period
+     * @return int The number of remaining requests in the current time period.
      */
     public function getRemaining(): int
     {
@@ -42,7 +42,7 @@ final class CounterState
     }
 
     /**
-     * @return int timestamp to wait until the rate limit resets
+     * @return int Timestamp to wait until the rate limit resets.
      */
     public function getResetTime(): int
     {
@@ -50,7 +50,7 @@ final class CounterState
     }
 
     /**
-     * @return bool if requests limit is reached
+     * @return bool If requests limit is reached.
      */
     public function isLimitReached(): bool
     {
