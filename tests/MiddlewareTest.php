@@ -107,7 +107,7 @@ final class MiddlewareTest extends TestCase
         $this->assertNotSame($middleware, $middleware->withCounterId('x42'));
         $this->assertNotSame(
             $middleware,
-            $middleware->withCounterIdCallback(static fn(ServerRequestInterface $request) => 'x42')
+            $middleware->withCounterIdCallback(static fn (ServerRequestInterface $request) => 'x42')
         );
     }
 
