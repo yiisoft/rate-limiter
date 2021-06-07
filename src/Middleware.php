@@ -14,9 +14,11 @@ use Yiisoft\Http\Status;
 /**
  * RateLimiter helps to prevent abuse by limiting the number of requests that could be me made consequentially.
  *
- * For example, you may want to limit the API usage of each user to be at most 100 API calls within a period of 10 minutes.
- * If too many requests are received from a user within the stated period of the time, a response with status code 429
- * (meaning "Too Many Requests") should be returned.
+ * For example, you may want to limit the API usage of each user to be at most 100 API calls within a period of 10
+ * minutes. If too many requests are received from a user within the stated period of the time, a response with status
+ * code 429 (meaning "Too Many Requests") should be returned.
+ *
+ * @psalm-type CounterIdCallback = callable(ServerRequestInterface):string
  */
 final class Middleware implements MiddlewareInterface
 {
@@ -24,10 +26,11 @@ final class Middleware implements MiddlewareInterface
 
     private ResponseFactoryInterface $responseFactory;
 
-    private ?string $counterId;
+    private ?string $counterId = null;
 
     /**
      * @var callable|null
+     * @psalm-var CounterIdCallback|null
      */
     private $counterIdCallback;
 
@@ -55,7 +58,7 @@ final class Middleware implements MiddlewareInterface
      * @param callable|null $callback Callback to use for generating counter ID. Counters with non-equal IDs
      * are counted separately.
      *
-     * @return self
+     * @psalm-param CounterIdCallback $callback
      */
     public function withCounterIdCallback(?callable $callback): self
     {
@@ -67,8 +70,6 @@ final class Middleware implements MiddlewareInterface
 
     /**
      * @param string $id Counter ID. Counters with non-equal IDs are counted separately.
-     *
-     * @return self
      */
     public function withCounterId(string $id): self
     {

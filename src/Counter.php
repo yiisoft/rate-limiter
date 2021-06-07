@@ -42,15 +42,8 @@ final class Counter implements CounterInterface
     private int $ttlInSeconds = self::DEFAULT_TTL;
 
     /**
-     * @var int Last increment time.
-     * In GCRA it's known as arrival time.
-     */
-    private int $lastIncrementTimeInMilliseconds;
-
-    /**
      * @param int $limit Maximum number of increments that could be performed before increments are limited.
      * @param int $periodInSeconds Period to apply limit to.
-     * @param CacheInterface $storage
      */
     public function __construct(int $limit, int $periodInSeconds, CacheInterface $storage)
     {
@@ -89,6 +82,7 @@ final class Counter implements CounterInterface
      */
     public function getCacheKey(): string
     {
+        /** @psalm-suppress PossiblyNullOperand Remove after fix https://github.com/vimeo/psalm/issues/5906 */
         return self::ID_PREFIX . $this->id;
     }
 
@@ -98,11 +92,12 @@ final class Counter implements CounterInterface
             throw new LogicException('The counter ID should be set.');
         }
 
-        $this->lastIncrementTimeInMilliseconds = $this->currentTimeInMilliseconds();
+        $lastIncrementTimeInMilliseconds = $this->currentTimeInMilliseconds();
         $theoreticalNextIncrementTime = $this->calculateTheoreticalNextIncrementTime(
-            $this->getLastStoredTheoreticalNextIncrementTime()
+            $lastIncrementTimeInMilliseconds,
+            $this->getLastStoredTheoreticalNextIncrementTime($lastIncrementTimeInMilliseconds)
         );
-        $remaining = $this->calculateRemaining($theoreticalNextIncrementTime);
+        $remaining = $this->calculateRemaining($lastIncrementTimeInMilliseconds, $theoreticalNextIncrementTime);
         $resetAfter = $this->calculateResetAfter($theoreticalNextIncrementTime);
 
         if ($remaining >= 1) {
@@ -113,31 +108,33 @@ final class Counter implements CounterInterface
     }
 
     /**
-     * @param float $storedTheoreticalNextIncrementTime
-     *
-     * @return float Theoretical increment time that would be expected from equally spaced increments at exactly rate limit.
-     * In GCRA it is known as TAT, theoretical arrival time.
+     * @return float Theoretical increment time that would be expected from equally spaced increments at exactly rate
+     * limit. In GCRA it is known as TAT, theoretical arrival time.
      */
-    private function calculateTheoreticalNextIncrementTime(float $storedTheoreticalNextIncrementTime): float
-    {
-        return max($this->lastIncrementTimeInMilliseconds, $storedTheoreticalNextIncrementTime) + $this->incrementIntervalInMilliseconds;
+    private function calculateTheoreticalNextIncrementTime(
+        int $lastIncrementTimeInMilliseconds,
+        float $storedTheoreticalNextIncrementTime
+    ): float {
+        return max($lastIncrementTimeInMilliseconds, $storedTheoreticalNextIncrementTime) +
+            $this->incrementIntervalInMilliseconds;
     }
 
     /**
-     * @param float $theoreticalNextIncrementTime
-     *
      * @return int The number of remaining requests in the current time period.
      */
-    private function calculateRemaining(float $theoreticalNextIncrementTime): int
+    private function calculateRemaining(int $lastIncrementTimeInMilliseconds, float $theoreticalNextIncrementTime): int
     {
         $incrementAllowedAt = $theoreticalNextIncrementTime - $this->periodInMilliseconds;
 
-        return (int)(round($this->lastIncrementTimeInMilliseconds - $incrementAllowedAt) / $this->incrementIntervalInMilliseconds);
+        return (int)(
+            round($lastIncrementTimeInMilliseconds - $incrementAllowedAt) /
+            $this->incrementIntervalInMilliseconds
+        );
     }
 
-    private function getLastStoredTheoreticalNextIncrementTime(): float
+    private function getLastStoredTheoreticalNextIncrementTime(int $lastIncrementTimeInMilliseconds): float
     {
-        return $this->storage->get($this->getCacheKey(), (float)$this->lastIncrementTimeInMilliseconds);
+        return (float)$this->storage->get($this->getCacheKey(), $lastIncrementTimeInMilliseconds);
     }
 
     private function storeTheoreticalNextIncrementTime(float $theoreticalNextIncrementTime): void
@@ -146,8 +143,6 @@ final class Counter implements CounterInterface
     }
 
     /**
-     * @param float $theoreticalNextIncrementTime
-     *
      * @return int Timestamp to wait until the rate limit resets.
      */
     private function calculateResetAfter(float $theoreticalNextIncrementTime): int
