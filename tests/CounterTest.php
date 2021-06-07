@@ -81,4 +81,19 @@ final class CounterTest extends TestCase
             $this->assertEquals(1, $statistics->getRemaining());
         }
     }
+
+    public function testCustomTtl(): void
+    {
+        $cache = new ArrayCache();
+
+        $counter = new Counter(1, 1, $cache);
+        $counter->setId('test');
+        $counter->setTtlInSeconds(1);
+
+        $counter->incrementAndGetState();
+
+        sleep(2);
+
+        self::assertNull($cache->get($counter->getCacheKey()));
+    }
 }
