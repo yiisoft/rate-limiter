@@ -54,6 +54,7 @@ final class Middleware implements MiddlewareInterface
     /**
      * @param callable|null $callback Callback to use for generating counter ID. Counters with non-equal IDs
      * are counted separately.
+     *
      * @return self
      */
     public function withCounterIdCallback(?callable $callback): self
@@ -66,6 +67,7 @@ final class Middleware implements MiddlewareInterface
 
     /**
      * @param string $id Counter ID. Counters with non-equal IDs are counted separately.
+     *
      * @return self
      */
     public function withCounterId(string $id): self
