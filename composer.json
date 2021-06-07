@@ -1,7 +1,7 @@
 {
     "name": "yiisoft/rate-limiter",
     "type": "library",
-    "description": "Yii Framework RateLimiter middleware",
+    "description": "Yii Rate Limiter Middleware",
     "keywords": [
         "yii",
         "rate limiter",
