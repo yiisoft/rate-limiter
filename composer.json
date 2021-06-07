@@ -19,8 +19,6 @@
         "irc": "irc://irc.freenode.net/yii",
         "source": "https://github.com/yiisoft/rate-limiter"
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
     "require": {
         "php": "^7.4|^8.0",
         "psr/http-factory": "^1.0",
