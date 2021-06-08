@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Yii\RateLimiter\Tests;
 
 use InvalidArgumentException;
+use LogicException;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Yii\RateLimiter\Counter;
@@ -43,8 +44,14 @@ final class CounterTest extends TestCase
 
     public function testShouldNotBeAbleToSetInvalidId(): void
     {
-        $this->expectException(\LogicException::class);
+        $this->expectException(LogicException::class);
         (new Counter(10, 60, new ArrayCache()))->incrementAndGetState();
+    }
+
+    public function testGetCacheKeyShouldFailWithoutId(): void
+    {
+        $this->expectException(LogicException::class);
+        (new Counter(10, 60, new ArrayCache()))->getCacheKey();
     }
 
     public function testShouldNotBeAbleToSetInvalidLimit(): void
@@ -73,5 +80,20 @@ final class CounterTest extends TestCase
             $statistics = $counter->incrementAndGetState();
             $this->assertEquals(1, $statistics->getRemaining());
         }
+    }
+
+    public function testCustomTtl(): void
+    {
+        $cache = new ArrayCache();
+
+        $counter = new Counter(1, 1, $cache);
+        $counter->setId('test');
+        $counter->setTtlInSeconds(1);
+
+        $counter->incrementAndGetState();
+
+        sleep(2);
+
+        self::assertNull($cache->get($counter->getCacheKey()));
     }
 }

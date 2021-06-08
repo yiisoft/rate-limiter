@@ -16,7 +16,7 @@
     </php>
 
     <testsuites>
-        <testsuite name="RateLimiter">
+        <testsuite name="Yii Rate Limiter Middleware tests">
             <directory>./tests</directory>
         </testsuite>
     </testsuites>

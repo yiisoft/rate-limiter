@@ -11,6 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Http\Method;
+use Yiisoft\Http\Status;
 use Yiisoft\Yii\RateLimiter\CounterInterface;
 use Yiisoft\Yii\RateLimiter\Middleware;
 
@@ -60,6 +61,9 @@ final class MiddlewareTest extends TestCase
             ],
             $response->getHeaders()
         );
+
+        $response->getBody()->rewind();
+        $this->assertSame(Status::TEXTS[Status::TOO_MANY_REQUESTS], $response->getBody()->getContents());
     }
 
     public function testCounterIdCouldBeSet(): void
@@ -81,6 +85,30 @@ final class MiddlewareTest extends TestCase
 
         $middleware->process($this->createRequest(), $this->createRequestHandler());
         $this->assertEquals('GET', $counter->getId());
+    }
+
+    public function testGenerateId(): void
+    {
+        $counter = new FakeCounter(100, 100);
+        $middleware = $this->createRateLimiter($counter);
+
+        $middleware->process(
+            $this->createRequest(Method::POST, '/HELLO-world/'),
+            $this->createRequestHandler(),
+        );
+
+        $this->assertSame('post-/hello-world/', $counter->getId());
+    }
+
+    public function testImmutability(): void
+    {
+        $middleware = $this->createRateLimiter(new FakeCounter(100, 100));
+
+        $this->assertNotSame($middleware, $middleware->withCounterId('x42'));
+        $this->assertNotSame(
+            $middleware,
+            $middleware->withCounterIdCallback(static fn (ServerRequestInterface $request) => 'x42')
+        );
     }
 
     private function createRequestHandler(): RequestHandlerInterface
