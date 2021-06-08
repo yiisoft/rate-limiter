@@ -48,7 +48,7 @@ final class CounterTest extends TestCase
         (new Counter(10, 60, new ArrayCache()))->incrementAndGetState();
     }
 
-    public function testCacheKeyShouldNotBeAbleWithoutId(): void
+    public function testGetCacheKeyShouldFailWithoutId(): void
     {
         $this->expectException(LogicException::class);
         (new Counter(10, 60, new ArrayCache()))->getCacheKey();
