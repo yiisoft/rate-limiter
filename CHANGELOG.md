@@ -1,6 +1,6 @@
 # Yii Rate Limiter Middleware Change Log
 
-## 1.0.1 under development
+## 1.0.1 June 08, 2021
 
 - Bug #14: Throw exception on call `getCacheKey()` in counter without the specified ID (vjik)
 
