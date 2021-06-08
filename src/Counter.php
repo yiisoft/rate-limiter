@@ -95,7 +95,10 @@ final class Counter implements CounterInterface
             throw new LogicException('The counter ID should be set.');
         }
 
+        // Last increment time.
+        // In GCRA it's known as arrival time.
         $lastIncrementTimeInMilliseconds = $this->currentTimeInMilliseconds();
+
         $theoreticalNextIncrementTime = $this->calculateTheoreticalNextIncrementTime(
             $lastIncrementTimeInMilliseconds,
             $this->getLastStoredTheoreticalNextIncrementTime($lastIncrementTimeInMilliseconds)
