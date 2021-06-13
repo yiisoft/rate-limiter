@@ -68,6 +68,10 @@ final class CounterTest extends TestCase
 
     public function testIncrementMustBeUniformAfterLimitIsReached(): void
     {
+        if (PHP_OS_FAMILY === 'Windows') {
+            $this->markTestSkipped('On Windows, the "usleep()" function used in this test may not work correctly.');
+        }
+
         $counter = new Counter(10, 1, new ArrayCache());
         $counter->setId('key');
 
