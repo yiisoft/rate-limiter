@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Yii\RateLimiter\Tests;
 
 use InvalidArgumentException;
-use LogicException;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Yii\RateLimiter\Counter;
@@ -14,56 +13,42 @@ final class CounterTest extends TestCase
 {
     public function testStatisticsShouldBeCorrectWhenLimitIsNotReached(): void
     {
-        $counter = new Counter(2, 5, new ArrayCache());
-        $counter->setId('key');
+        $counter = new Counter(new ArrayCache(), 2, 5);
 
-        $statistics = $counter->incrementAndGetState();
-        $this->assertEquals(2, $statistics->getLimit());
-        $this->assertEquals(1, $statistics->getRemaining());
-        $this->assertGreaterThanOrEqual(time(), $statistics->getResetTime());
-        $this->assertFalse($statistics->isLimitReached());
+        $statistics = $counter->hit('key');
+        $this->assertEquals(2, $statistics->limit);
+        $this->assertEquals(1, $statistics->remaining);
+        $this->assertGreaterThanOrEqual(time(), $statistics->resetTime);
+        $this->assertFalse($statistics->isLimitReached);
     }
 
     public function testStatisticsShouldBeCorrectWhenLimitIsReached(): void
     {
-        $counter = new Counter(2, 4, new ArrayCache());
-        $counter->setId('key');
+        $counter = new Counter(new ArrayCache(), 2, 4);
 
-        $statistics = $counter->incrementAndGetState();
-        $this->assertEquals(2, $statistics->getLimit());
-        $this->assertEquals(1, $statistics->getRemaining());
-        $this->assertGreaterThanOrEqual(time(), $statistics->getResetTime());
-        $this->assertFalse($statistics->isLimitReached());
+        $statistics = $counter->hit('key');
+        $this->assertEquals(2, $statistics->limit);
+        $this->assertEquals(1, $statistics->remaining);
+        $this->assertGreaterThanOrEqual(time(), $statistics->resetTime);
+        $this->assertFalse($statistics->isLimitReached);
 
-        $statistics = $counter->incrementAndGetState();
-        $this->assertEquals(2, $statistics->getLimit());
-        $this->assertEquals(0, $statistics->getRemaining());
-        $this->assertGreaterThanOrEqual(time(), $statistics->getResetTime());
-        $this->assertTrue($statistics->isLimitReached());
-    }
-
-    public function testShouldNotBeAbleToSetInvalidId(): void
-    {
-        $this->expectException(LogicException::class);
-        (new Counter(10, 60, new ArrayCache()))->incrementAndGetState();
-    }
-
-    public function testGetCacheKeyShouldFailWithoutId(): void
-    {
-        $this->expectException(LogicException::class);
-        (new Counter(10, 60, new ArrayCache()))->getCacheKey();
+        $statistics = $counter->hit('key');
+        $this->assertEquals(2, $statistics->limit);
+        $this->assertEquals(0, $statistics->remaining);
+        $this->assertGreaterThanOrEqual(time(), $statistics->resetTime);
+        $this->assertTrue($statistics->isLimitReached);
     }
 
     public function testShouldNotBeAbleToSetInvalidLimit(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        new Counter(0, 60, new ArrayCache());
+        new Counter(new ArrayCache(), 0, 60);
     }
 
     public function testShouldNotBeAbleToSetInvalidPeriod(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        new Counter(10, 0, new ArrayCache());
+        new Counter(new ArrayCache(), 10, 0);
     }
 
     public function testIncrementMustBeUniformAfterLimitIsReached(): void
@@ -72,17 +57,16 @@ final class CounterTest extends TestCase
             $this->markTestSkipped('On Windows, the "usleep()" function used in this test may not work correctly.');
         }
 
-        $counter = new Counter(10, 1, new ArrayCache());
-        $counter->setId('key');
+        $counter = new Counter(new ArrayCache(), 10, 1);
 
         for ($i = 0; $i < 10; $i++) {
-            $counter->incrementAndGetState();
+            $counter->hit('key');
         }
 
         for ($i = 0; $i < 5; $i++) {
             usleep(110000); // period(microseconds) / limit + 10ms(cost work)
-            $statistics = $counter->incrementAndGetState();
-            $this->assertEquals(1, $statistics->getRemaining());
+            $statistics = $counter->hit('key');
+            $this->assertEquals(1, $statistics->remaining);
         }
     }
 
@@ -90,14 +74,12 @@ final class CounterTest extends TestCase
     {
         $cache = new ArrayCache();
 
-        $counter = new Counter(1, 1, $cache);
-        $counter->setId('test');
-        $counter->setTtlInSeconds(1);
+        $counter = new Counter($cache, 1, 1, 1);
 
-        $counter->incrementAndGetState();
+        $counter->hit('test');
 
         sleep(2);
 
-        self::assertNull($cache->get($counter->getCacheKey()));
+        self::assertNull($cache->get('rate-limiter-test'));
     }
 }

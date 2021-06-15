@@ -10,10 +10,15 @@ use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Http\Method;
 use Yiisoft\Http\Status;
+use Yiisoft\Yii\RateLimiter\Counter;
 use Yiisoft\Yii\RateLimiter\CounterInterface;
-use Yiisoft\Yii\RateLimiter\Middleware;
+use Yiisoft\Yii\RateLimiter\LimitingAll;
+use Yiisoft\Yii\RateLimiter\LimitingPerUser;
+use Yiisoft\Yii\RateLimiter\LimitingPolicy;
+use Yiisoft\Yii\RateLimiter\LimitRequestsMiddleware;
 
 final class MiddlewareTest extends TestCase
 {
@@ -66,49 +71,99 @@ final class MiddlewareTest extends TestCase
         $this->assertSame(Status::TEXTS[Status::TOO_MANY_REQUESTS], $response->getBody()->getContents());
     }
 
-    public function testCounterIdCouldBeSet(): void
+    public function testWithLimitingAll(): void
     {
-        $counter = new FakeCounter(100, 100);
-        $middleware = $this->createRateLimiter($counter)->withCounterId('custom-id');
-        $middleware->process($this->createRequest(), $this->createRequestHandler());
-        $this->assertEquals('custom-id', $counter->getId());
-    }
+        $counter = new Counter(new ArrayCache(), 2, 5);
+        $middleware = $this->createRateLimiter($counter, new LimitingAll());
 
-    public function testCounterIdCouldBeSetWithCallback(): void
-    {
-        $counter = new FakeCounter(100, 100);
-        $middleware = $this->createRateLimiter($counter)->withCounterIdCallback(
-            static function (ServerRequestInterface $request) {
-                return $request->getMethod();
-            }
+        // last allowed request
+        $response = $middleware->process(
+            $this->createRequest(Method::GET , '/', ['REMOTE_ADDR' => '193.186.62.12']),
+            $this->createRequestHandler()
+        );
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $headers = $response->getHeaders();
+
+        self::assertEquals(['2'], $headers['X-Rate-Limit-Limit']);
+        self::assertEquals(['1'], $headers['X-Rate-Limit-Remaining']);
+
+        // first denied request
+        $response = $middleware->process(
+            $this->createRequest(Method::GET , '/', ['REMOTE_ADDR' => '193.186.62.12']),
+            $this->createRequestHandler()
         );
 
-        $middleware->process($this->createRequest(), $this->createRequestHandler());
-        $this->assertEquals('GET', $counter->getId());
-    }
+        $headers = $response->getHeaders();
 
-    public function testGenerateId(): void
-    {
-        $counter = new FakeCounter(100, 100);
-        $middleware = $this->createRateLimiter($counter);
+        $this->assertEquals(429, $response->getStatusCode());
+        self::assertEquals(['2'], $headers['X-Rate-Limit-Limit']);
+        self::assertEquals(['0'], $headers['X-Rate-Limit-Remaining']);
 
-        $middleware->process(
-            $this->createRequest(Method::POST, '/HELLO-world/'),
-            $this->createRequestHandler(),
+        // second denied request for other user
+        $response = $middleware->process(
+            $this->createRequest(Method::GET , '/', ['REMOTE_ADDR' => '193.186.62.13']),
+            $this->createRequestHandler()
         );
 
-        $this->assertSame('post-/hello-world/', $counter->getId());
+        $headers = $response->getHeaders();
+
+        $this->assertEquals(429, $response->getStatusCode());
+        self::assertEquals(['2'], $headers['X-Rate-Limit-Limit']);
+        self::assertEquals(['0'], $headers['X-Rate-Limit-Remaining']);
     }
 
-    public function testImmutability(): void
+    public function testWithLimitingPerUser(): void
     {
-        $middleware = $this->createRateLimiter(new FakeCounter(100, 100));
+        $counter = new Counter(new ArrayCache(), 2, 5);
+        $middleware = $this->createRateLimiter($counter, new LimitingPerUser());
 
-        $this->assertNotSame($middleware, $middleware->withCounterId('x42'));
-        $this->assertNotSame(
-            $middleware,
-            $middleware->withCounterIdCallback(static fn (ServerRequestInterface $request) => 'x42')
+        // last allowed request
+        $response = $middleware->process(
+            $this->createRequest(Method::GET , '/', ['REMOTE_ADDR' => '193.186.62.12']),
+            $this->createRequestHandler()
         );
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $headers = $response->getHeaders();
+
+        self::assertEquals(['2'], $headers['X-Rate-Limit-Limit']);
+        self::assertEquals(['1'], $headers['X-Rate-Limit-Remaining']);
+
+        // first denied request
+        $response = $middleware->process(
+            $this->createRequest(Method::GET , '/', ['REMOTE_ADDR' => '193.186.62.12']),
+            $this->createRequestHandler()
+        );
+
+        $headers = $response->getHeaders();
+
+        $this->assertEquals(429, $response->getStatusCode());
+        self::assertEquals(['2'], $headers['X-Rate-Limit-Limit']);
+        self::assertEquals(['0'], $headers['X-Rate-Limit-Remaining']);
+
+        // second not denied request for other user
+        $response = $middleware->process(
+            $this->createRequest(Method::GET , '/', ['REMOTE_ADDR' => '193.186.62.13']),
+            $this->createRequestHandler()
+        );
+
+        $headers = $response->getHeaders();
+
+        $this->assertEquals(200, $response->getStatusCode());
+        self::assertEquals(['2'], $headers['X-Rate-Limit-Limit']);
+        self::assertEquals(['1'], $headers['X-Rate-Limit-Remaining']);
+
+        $response = $middleware->process(
+            $this->createRequest(Method::GET , '/', ['REMOTE_ADDR' => '193.186.62.13']),
+            $this->createRequestHandler()
+        );
+
+        $headers = $response->getHeaders();
+
+        $this->assertEquals(429, $response->getStatusCode());
+        self::assertEquals(['2'], $headers['X-Rate-Limit-Limit']);
+        self::assertEquals(['0'], $headers['X-Rate-Limit-Remaining']);
     }
 
     private function createRequestHandler(): RequestHandlerInterface
@@ -121,13 +176,18 @@ final class MiddlewareTest extends TestCase
         return $requestHandler;
     }
 
-    private function createRequest(string $method = Method::GET, string $uri = '/'): ServerRequestInterface
-    {
-        return new ServerRequest($method, $uri);
+    private function createRequest(
+        string $method = Method::GET,
+        string $uri = '/',
+        array $params = []
+    ): ServerRequestInterface {
+        return new ServerRequest($method, $uri, [], null, '1.1', $params);
     }
 
-    private function createRateLimiter(CounterInterface $counter): Middleware
-    {
-        return new Middleware($counter, new Psr17Factory());
+    private function createRateLimiter(
+        CounterInterface $counter,
+        ?LimitingPolicy $limitingPolicy = null
+    ): LimitRequestsMiddleware {
+        return new LimitRequestsMiddleware($counter, new Psr17Factory(), $limitingPolicy);
     }
 }

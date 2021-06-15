@@ -12,7 +12,6 @@ final class FakeCounter implements CounterInterface
     private int $remaining;
     private int $limit;
     private int $reset;
-    private string $id;
 
     public function __construct(int $limit, int $reset)
     {
@@ -21,17 +20,7 @@ final class FakeCounter implements CounterInterface
         $this->remaining = $limit;
     }
 
-    public function setId(string $id): void
-    {
-        $this->id = $id;
-    }
-
-    public function getId(): ?string
-    {
-        return $this->id;
-    }
-
-    public function incrementAndGetState(): CounterState
+    public function hit(string $id): CounterState
     {
         $this->remaining--;
         return new CounterState($this->limit, $this->remaining, $this->reset);

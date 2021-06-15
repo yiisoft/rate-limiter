@@ -36,16 +36,20 @@ composer install yiisoft/rate-limiter --prefer-dist
 ## General usage
 
 ```php
-use Yiisoft\Yii\RateLimiter\Middleware;
+use Yiisoft\Yii\RateLimiter\LimitRequestsMiddleware;
 use Yiisoft\Yii\RateLimiter\Counter;
 use Yiisoft\Cache\ArrayCache;
 use Nyholm\Psr7\Factory\Psr17Factory;
+use Yiisoft\Yii\RateLimiter\LimitingAll;
+use Yiisoft\Yii\RateLimiter\LimitingPerUser;
 
 $cache = new ArrayCache();
-$counter = new Counter(2, 5, $cache);
+$counter = new Counter($cache, 2, 5);
 $responseFactory = new Psr17Factory();
 
-$middleware = new Middleware($counter, $responseFactory);
+$middleware = new LimitRequestsMiddleware($counter, $responseFactory, new LimitingAll());
+$middleware = new LimitRequestsMiddleware($counter, $responseFactory, new LimitingPerUser());
+$middleware = new LimitRequestsMiddleware($counter, $responseFactory); // LimitingPerUser by default
 ```
 
 In the above 2 is the maximum number of increments that could be performed before increments are limited and 5 is
