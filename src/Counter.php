@@ -141,6 +141,7 @@ final class Counter implements CounterInterface
 
     /**
      * @param string $id
+     *
      * @return string Cache key used to store the next increment time.
      */
     private function getCacheKey(string $id): string

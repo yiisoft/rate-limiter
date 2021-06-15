@@ -78,7 +78,7 @@ final class MiddlewareTest extends TestCase
 
         // last allowed request
         $response = $middleware->process(
-            $this->createRequest(Method::GET , '/', ['REMOTE_ADDR' => '193.186.62.12']),
+            $this->createRequest(Method::GET, '/', ['REMOTE_ADDR' => '193.186.62.12']),
             $this->createRequestHandler()
         );
         $this->assertEquals(200, $response->getStatusCode());
@@ -90,7 +90,7 @@ final class MiddlewareTest extends TestCase
 
         // first denied request
         $response = $middleware->process(
-            $this->createRequest(Method::GET , '/', ['REMOTE_ADDR' => '193.186.62.12']),
+            $this->createRequest(Method::GET, '/', ['REMOTE_ADDR' => '193.186.62.12']),
             $this->createRequestHandler()
         );
 
@@ -102,7 +102,7 @@ final class MiddlewareTest extends TestCase
 
         // second denied request for other user
         $response = $middleware->process(
-            $this->createRequest(Method::GET , '/', ['REMOTE_ADDR' => '193.186.62.13']),
+            $this->createRequest(Method::GET, '/', ['REMOTE_ADDR' => '193.186.62.13']),
             $this->createRequestHandler()
         );
 
@@ -120,7 +120,7 @@ final class MiddlewareTest extends TestCase
 
         // last allowed request
         $response = $middleware->process(
-            $this->createRequest(Method::GET , '/', ['REMOTE_ADDR' => '193.186.62.12']),
+            $this->createRequest(Method::GET, '/', ['REMOTE_ADDR' => '193.186.62.12']),
             $this->createRequestHandler()
         );
         $this->assertEquals(200, $response->getStatusCode());
@@ -132,7 +132,7 @@ final class MiddlewareTest extends TestCase
 
         // first denied request
         $response = $middleware->process(
-            $this->createRequest(Method::GET , '/', ['REMOTE_ADDR' => '193.186.62.12']),
+            $this->createRequest(Method::GET, '/', ['REMOTE_ADDR' => '193.186.62.12']),
             $this->createRequestHandler()
         );
 
@@ -144,7 +144,7 @@ final class MiddlewareTest extends TestCase
 
         // second not denied request for other user
         $response = $middleware->process(
-            $this->createRequest(Method::GET , '/', ['REMOTE_ADDR' => '193.186.62.13']),
+            $this->createRequest(Method::GET, '/', ['REMOTE_ADDR' => '193.186.62.13']),
             $this->createRequestHandler()
         );
 
@@ -155,7 +155,7 @@ final class MiddlewareTest extends TestCase
         self::assertEquals(['1'], $headers['X-Rate-Limit-Remaining']);
 
         $response = $middleware->process(
-            $this->createRequest(Method::GET , '/', ['REMOTE_ADDR' => '193.186.62.13']),
+            $this->createRequest(Method::GET, '/', ['REMOTE_ADDR' => '193.186.62.13']),
             $this->createRequestHandler()
         );
 

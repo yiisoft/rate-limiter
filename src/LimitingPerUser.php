@@ -15,6 +15,7 @@ final class LimitingPerUser implements LimitingPolicy
 
     private function getIp(ServerRequestInterface $request): string
     {
+        /** @var array{REMOTE_ADDR?: string} $server */
         $server = $request->getServerParams();
 
         return trim($server['REMOTE_ADDR'] ?? '', '[]');
