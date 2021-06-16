@@ -6,7 +6,7 @@ namespace Yiisoft\Yii\RateLimiter\Policy;
 
 use Psr\Http\Message\ServerRequestInterface;
 
-final class LimitingFunction implements LimitingPolicy
+final class LimitCallback implements LimitPolicyInterface
 {
     /**
      * @psalm-var callable(ServerRequestInterface): string

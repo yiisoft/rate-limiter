@@ -8,7 +8,7 @@ use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Yiisoft\Http\Method;
-use Yiisoft\Yii\RateLimiter\Policy\LimitingFunction;
+use Yiisoft\Yii\RateLimiter\Policy\LimitCallback;
 
 final class LimitingFunctionTest extends TestCase
 {
@@ -16,7 +16,7 @@ final class LimitingFunctionTest extends TestCase
     {
         self::expectDeprecationMessage('The id must be a non-empty-string.');
         self::expectException(\InvalidArgumentException::class);
-        (new LimitingFunction(function (ServerRequestInterface $_request): string {
+        (new LimitCallback(function (ServerRequestInterface $_request): string {
             return '';
         }))->fingerprint(new ServerRequest(Method::GET, '/'));
     }

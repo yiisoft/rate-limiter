@@ -6,7 +6,7 @@ namespace Yiisoft\Yii\RateLimiter\Policy;
 
 use Psr\Http\Message\ServerRequestInterface;
 
-interface LimitingPolicy
+interface LimitPolicyInterface
 {
     public function fingerprint(ServerRequestInterface $request): string;
 }

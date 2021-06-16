@@ -10,8 +10,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Http\Status;
-use Yiisoft\Yii\RateLimiter\Policy\LimitingPerUser;
-use Yiisoft\Yii\RateLimiter\Policy\LimitingPolicy;
+use Yiisoft\Yii\RateLimiter\Policy\LimitPerIp;
+use Yiisoft\Yii\RateLimiter\Policy\LimitPolicyInterface;
 
 /**
  * RateLimiter helps to prevent abuse by limiting the number of requests that could be me made consequentially.
@@ -28,16 +28,16 @@ final class LimitRequestsMiddleware implements MiddlewareInterface
 
     private ResponseFactoryInterface $responseFactory;
 
-    private LimitingPolicy $limitingPolicy;
+    private LimitPolicyInterface $limitingPolicy;
 
     public function __construct(
         CounterInterface $counter,
         ResponseFactoryInterface $responseFactory,
-        ?LimitingPolicy $limitingPolicy = null
+        ?LimitPolicyInterface $limitingPolicy = null
     ) {
         $this->counter = $counter;
         $this->responseFactory = $responseFactory;
-        $this->limitingPolicy = $limitingPolicy ?: new LimitingPerUser();
+        $this->limitingPolicy = $limitingPolicy ?: new LimitPerIp();
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface

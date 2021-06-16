@@ -15,10 +15,10 @@ use Yiisoft\Http\Method;
 use Yiisoft\Http\Status;
 use Yiisoft\Yii\RateLimiter\Counter;
 use Yiisoft\Yii\RateLimiter\CounterInterface;
-use Yiisoft\Yii\RateLimiter\Policy\LimitingAll;
-use Yiisoft\Yii\RateLimiter\Policy\LimitingFunction;
-use Yiisoft\Yii\RateLimiter\Policy\LimitingPerUser;
-use Yiisoft\Yii\RateLimiter\Policy\LimitingPolicy;
+use Yiisoft\Yii\RateLimiter\Policy\LimitAlways;
+use Yiisoft\Yii\RateLimiter\Policy\LimitCallback;
+use Yiisoft\Yii\RateLimiter\Policy\LimitPerIp;
+use Yiisoft\Yii\RateLimiter\Policy\LimitPolicyInterface;
 use Yiisoft\Yii\RateLimiter\LimitRequestsMiddleware;
 
 final class MiddlewareTest extends TestCase
@@ -75,7 +75,7 @@ final class MiddlewareTest extends TestCase
     public function testWithLimitingAll(): void
     {
         $counter = new Counter(new ArrayCache(), 2, 5);
-        $middleware = $this->createRateLimiter($counter, new LimitingAll());
+        $middleware = $this->createRateLimiter($counter, new LimitAlways());
 
         // last allowed request
         $response = $middleware->process(
@@ -117,7 +117,7 @@ final class MiddlewareTest extends TestCase
     public function testWithLimitingPerUser(): void
     {
         $counter = new Counter(new ArrayCache(), 2, 5);
-        $middleware = $this->createRateLimiter($counter, new LimitingPerUser());
+        $middleware = $this->createRateLimiter($counter, new LimitPerIp());
 
         // last allowed request
         $response = $middleware->process(
@@ -173,7 +173,7 @@ final class MiddlewareTest extends TestCase
         $counter = new Counter(new ArrayCache(), 2, 5);
         $middleware = $this->createRateLimiter(
             $counter,
-            new LimitingFunction(function (ServerRequestInterface $_request): string {
+            new LimitCallback(function (ServerRequestInterface $_request): string {
                 return time() . uniqid() . uniqid();
             })
         );
@@ -193,7 +193,7 @@ final class MiddlewareTest extends TestCase
         $counter = new Counter(new ArrayCache(), 2, 5);
         $middleware = $this->createRateLimiter(
             $counter,
-            new LimitingFunction(function (ServerRequestInterface $_request): string {
+            new LimitCallback(function (ServerRequestInterface $_request): string {
                 return 'id';
             })
         );
@@ -234,7 +234,7 @@ final class MiddlewareTest extends TestCase
 
     private function createRateLimiter(
         CounterInterface $counter,
-        ?LimitingPolicy $limitingPolicy = null
+        ?LimitPolicyInterface $limitingPolicy = null
     ): LimitRequestsMiddleware {
         return new LimitRequestsMiddleware($counter, new Psr17Factory(), $limitingPolicy);
     }

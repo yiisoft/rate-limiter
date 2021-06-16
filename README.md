@@ -41,17 +41,17 @@ use Yiisoft\Yii\RateLimiter\LimitRequestsMiddleware;
 use Yiisoft\Yii\RateLimiter\Counter;
 use Yiisoft\Cache\ArrayCache;
 use Nyholm\Psr7\Factory\Psr17Factory;
-use Yiisoft\Yii\RateLimiter\Policy\LimitingAll;
-use Yiisoft\Yii\RateLimiter\Policy\LimitingPerUser;
-use Yiisoft\Yii\RateLimiter\Policy\LimitingFunction;
+use Yiisoft\Yii\RateLimiter\Policy\LimitAlways;
+use Yiisoft\Yii\RateLimiter\Policy\LimitPerIp;
+use Yiisoft\Yii\RateLimiter\Policy\LimitCallback;
 
 $cache = new ArrayCache();
 $counter = new Counter($cache, 2, 5);
 $responseFactory = new Psr17Factory();
 
-$middleware = new LimitRequestsMiddleware($counter, $responseFactory, new LimitingAll());
-$middleware = new LimitRequestsMiddleware($counter, $responseFactory, new LimitingPerUser());
-$middleware = new LimitRequestsMiddleware($counter, $responseFactory, new LimitingFunction(function (ServerRequestInterface $request): string {
+$middleware = new LimitRequestsMiddleware($counter, $responseFactory, new LimitAlways());
+$middleware = new LimitRequestsMiddleware($counter, $responseFactory, new LimitPerIp());
+$middleware = new LimitRequestsMiddleware($counter, $responseFactory, new LimitCallback(function (ServerRequestInterface $request): string {
     // in e.g return user id from database if authentication used.
 }));
 $middleware = new LimitRequestsMiddleware($counter, $responseFactory); // LimitingPerUser by default
