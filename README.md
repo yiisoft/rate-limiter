@@ -54,7 +54,7 @@ $middleware = new LimitRequestsMiddleware($counter, $responseFactory, new LimitP
 $middleware = new LimitRequestsMiddleware($counter, $responseFactory, new LimitCallback(function (ServerRequestInterface $request): string {
     // in e.g return user id from database if authentication used.
 }));
-$middleware = new LimitRequestsMiddleware($counter, $responseFactory); // LimitingPerUser by default
+$middleware = new LimitRequestsMiddleware($counter, $responseFactory); // LimitPerIp by default
 ```
 
 In the above 2 is the maximum number of increments that could be performed before increments are limited and 5 is
