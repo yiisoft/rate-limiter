@@ -10,6 +10,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Http\Status;
+use Yiisoft\Yii\RateLimiter\Policy\LimitingPerUser;
+use Yiisoft\Yii\RateLimiter\Policy\LimitingPolicy;
 
 /**
  * RateLimiter helps to prevent abuse by limiting the number of requests that could be me made consequentially.

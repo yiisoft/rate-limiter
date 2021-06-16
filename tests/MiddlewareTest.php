@@ -15,9 +15,10 @@ use Yiisoft\Http\Method;
 use Yiisoft\Http\Status;
 use Yiisoft\Yii\RateLimiter\Counter;
 use Yiisoft\Yii\RateLimiter\CounterInterface;
-use Yiisoft\Yii\RateLimiter\LimitingAll;
-use Yiisoft\Yii\RateLimiter\LimitingPerUser;
-use Yiisoft\Yii\RateLimiter\LimitingPolicy;
+use Yiisoft\Yii\RateLimiter\Policy\LimitingAll;
+use Yiisoft\Yii\RateLimiter\Policy\LimitingFunction;
+use Yiisoft\Yii\RateLimiter\Policy\LimitingPerUser;
+use Yiisoft\Yii\RateLimiter\Policy\LimitingPolicy;
 use Yiisoft\Yii\RateLimiter\LimitRequestsMiddleware;
 
 final class MiddlewareTest extends TestCase
@@ -85,8 +86,8 @@ final class MiddlewareTest extends TestCase
 
         $headers = $response->getHeaders();
 
-        self::assertEquals(['2'], $headers['X-Rate-Limit-Limit']);
-        self::assertEquals(['1'], $headers['X-Rate-Limit-Remaining']);
+        $this->assertEquals(['2'], $headers['X-Rate-Limit-Limit']);
+        $this->assertEquals(['1'], $headers['X-Rate-Limit-Remaining']);
 
         // first denied request
         $response = $middleware->process(
@@ -97,8 +98,8 @@ final class MiddlewareTest extends TestCase
         $headers = $response->getHeaders();
 
         $this->assertEquals(429, $response->getStatusCode());
-        self::assertEquals(['2'], $headers['X-Rate-Limit-Limit']);
-        self::assertEquals(['0'], $headers['X-Rate-Limit-Remaining']);
+        $this->assertEquals(['2'], $headers['X-Rate-Limit-Limit']);
+        $this->assertEquals(['0'], $headers['X-Rate-Limit-Remaining']);
 
         // second denied request for other user
         $response = $middleware->process(
@@ -109,8 +110,8 @@ final class MiddlewareTest extends TestCase
         $headers = $response->getHeaders();
 
         $this->assertEquals(429, $response->getStatusCode());
-        self::assertEquals(['2'], $headers['X-Rate-Limit-Limit']);
-        self::assertEquals(['0'], $headers['X-Rate-Limit-Remaining']);
+        $this->assertEquals(['2'], $headers['X-Rate-Limit-Limit']);
+        $this->assertEquals(['0'], $headers['X-Rate-Limit-Remaining']);
     }
 
     public function testWithLimitingPerUser(): void
@@ -127,8 +128,8 @@ final class MiddlewareTest extends TestCase
 
         $headers = $response->getHeaders();
 
-        self::assertEquals(['2'], $headers['X-Rate-Limit-Limit']);
-        self::assertEquals(['1'], $headers['X-Rate-Limit-Remaining']);
+        $this->assertEquals(['2'], $headers['X-Rate-Limit-Limit']);
+        $this->assertEquals(['1'], $headers['X-Rate-Limit-Remaining']);
 
         // first denied request
         $response = $middleware->process(
@@ -139,8 +140,8 @@ final class MiddlewareTest extends TestCase
         $headers = $response->getHeaders();
 
         $this->assertEquals(429, $response->getStatusCode());
-        self::assertEquals(['2'], $headers['X-Rate-Limit-Limit']);
-        self::assertEquals(['0'], $headers['X-Rate-Limit-Remaining']);
+        $this->assertEquals(['2'], $headers['X-Rate-Limit-Limit']);
+        $this->assertEquals(['0'], $headers['X-Rate-Limit-Remaining']);
 
         // second not denied request for other user
         $response = $middleware->process(
@@ -151,8 +152,8 @@ final class MiddlewareTest extends TestCase
         $headers = $response->getHeaders();
 
         $this->assertEquals(200, $response->getStatusCode());
-        self::assertEquals(['2'], $headers['X-Rate-Limit-Limit']);
-        self::assertEquals(['1'], $headers['X-Rate-Limit-Remaining']);
+        $this->assertEquals(['2'], $headers['X-Rate-Limit-Limit']);
+        $this->assertEquals(['1'], $headers['X-Rate-Limit-Remaining']);
 
         $response = $middleware->process(
             $this->createRequest(Method::GET, '/', ['REMOTE_ADDR' => '193.186.62.13']),
@@ -162,8 +163,55 @@ final class MiddlewareTest extends TestCase
         $headers = $response->getHeaders();
 
         $this->assertEquals(429, $response->getStatusCode());
-        self::assertEquals(['2'], $headers['X-Rate-Limit-Limit']);
-        self::assertEquals(['0'], $headers['X-Rate-Limit-Remaining']);
+        $this->assertEquals(['2'], $headers['X-Rate-Limit-Limit']);
+        $this->assertEquals(['0'], $headers['X-Rate-Limit-Remaining']);
+    }
+
+    public function testWithLimitingFunction(): void
+    {
+        // test unlimited requests for always unique id
+        $counter = new Counter(new ArrayCache(), 2, 5);
+        $middleware = $this->createRateLimiter(
+            $counter,
+            new LimitingFunction(function (ServerRequestInterface $_request): string {
+                return time() . uniqid() . uniqid();
+            })
+        );
+
+        for ($i = 0; $i < 10; $i++) {
+            $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
+
+            $this->assertEquals(200, $response->getStatusCode());
+
+            $headers = $response->getHeaders();
+
+            $this->assertEquals(['2'], $headers['X-Rate-Limit-Limit']);
+            $this->assertEquals(['1'], $headers['X-Rate-Limit-Remaining']);
+        }
+
+        // test limited requests for always same id
+        $counter = new Counter(new ArrayCache(), 2, 5);
+        $middleware = $this->createRateLimiter(
+            $counter,
+            new LimitingFunction(function (ServerRequestInterface $_request): string {
+                return 'id';
+            })
+        );
+
+        $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        for ($i = 0; $i < 10; $i++) {
+            $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
+
+            $this->assertEquals(429, $response->getStatusCode());
+
+            $headers = $response->getHeaders();
+
+            $this->assertEquals(['2'], $headers['X-Rate-Limit-Limit']);
+            $this->assertEquals(['0'], $headers['X-Rate-Limit-Remaining']);
+        }
     }
 
     private function createRequestHandler(): RequestHandlerInterface

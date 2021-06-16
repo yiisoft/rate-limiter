@@ -36,12 +36,14 @@ composer install yiisoft/rate-limiter --prefer-dist
 ## General usage
 
 ```php
+use Psr\Http\Message\ServerRequestInterface;
 use Yiisoft\Yii\RateLimiter\LimitRequestsMiddleware;
 use Yiisoft\Yii\RateLimiter\Counter;
 use Yiisoft\Cache\ArrayCache;
 use Nyholm\Psr7\Factory\Psr17Factory;
-use Yiisoft\Yii\RateLimiter\LimitingAll;
-use Yiisoft\Yii\RateLimiter\LimitingPerUser;
+use Yiisoft\Yii\RateLimiter\Policy\LimitingAll;
+use Yiisoft\Yii\RateLimiter\Policy\LimitingPerUser;
+use Yiisoft\Yii\RateLimiter\Policy\LimitingFunction;
 
 $cache = new ArrayCache();
 $counter = new Counter($cache, 2, 5);
@@ -49,6 +51,9 @@ $responseFactory = new Psr17Factory();
 
 $middleware = new LimitRequestsMiddleware($counter, $responseFactory, new LimitingAll());
 $middleware = new LimitRequestsMiddleware($counter, $responseFactory, new LimitingPerUser());
+$middleware = new LimitRequestsMiddleware($counter, $responseFactory, new LimitingFunction(function (ServerRequestInterface $request): string {
+    // in e.g return user id from database if authentication used.
+}));
 $middleware = new LimitRequestsMiddleware($counter, $responseFactory); // LimitingPerUser by default
 ```
 

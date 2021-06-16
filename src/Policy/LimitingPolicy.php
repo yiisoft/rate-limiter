@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\RateLimiter;
+namespace Yiisoft\Yii\RateLimiter\Policy;
 
 use Psr\Http\Message\ServerRequestInterface;
 
