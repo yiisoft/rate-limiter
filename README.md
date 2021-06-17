@@ -39,14 +39,16 @@ composer install yiisoft/rate-limiter --prefer-dist
 use Psr\Http\Message\ServerRequestInterface;
 use Yiisoft\Yii\RateLimiter\LimitRequestsMiddleware;
 use Yiisoft\Yii\RateLimiter\Counter;
-use Yiisoft\Cache\ArrayCache;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Yiisoft\Yii\RateLimiter\Policy\LimitAlways;
 use Yiisoft\Yii\RateLimiter\Policy\LimitPerIp;
 use Yiisoft\Yii\RateLimiter\Policy\LimitCallback;
+use Yiisoft\Yii\RateLimiter\Storage\StorageInterface;
 
-$cache = new ArrayCache();
-$counter = new Counter($cache, 2, 5);
+/** @var StorageInterface $storage */
+$storage = new RedisStore(); // in e.g
+
+$counter = new Counter($storage, 2, 5);
 $responseFactory = new Psr17Factory();
 
 $middleware = new LimitRequestsMiddleware($counter, $responseFactory, new LimitAlways());

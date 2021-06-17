@@ -44,7 +44,7 @@ final class LimitRequestsMiddleware implements MiddlewareInterface
     {
         $state = $this->counter->hit($this->limitingPolicy->fingerprint($request));
 
-        if ($state->isLimitReached) {
+        if ($state->isLimitReached()) {
             $response = $this->createErrorResponse();
         } else {
             $response = $handler->handle($request);
@@ -64,8 +64,8 @@ final class LimitRequestsMiddleware implements MiddlewareInterface
     private function addHeaders(ResponseInterface $response, CounterState $result): ResponseInterface
     {
         return $response
-            ->withHeader('X-Rate-Limit-Limit', (string)$result->limit)
-            ->withHeader('X-Rate-Limit-Remaining', (string)$result->remaining)
-            ->withHeader('X-Rate-Limit-Reset', (string)$result->resetTime);
+            ->withHeader('X-Rate-Limit-Limit', (string)$result->getLimit())
+            ->withHeader('X-Rate-Limit-Remaining', (string)$result->getRemaining())
+            ->withHeader('X-Rate-Limit-Reset', (string)$result->getResetTime());
     }
 }

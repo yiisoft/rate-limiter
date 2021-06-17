@@ -74,7 +74,7 @@ final class MiddlewareTest extends TestCase
 
     public function testWithLimitingAll(): void
     {
-        $counter = new Counter(new ArrayCache(), 2, 5);
+        $counter = new Counter(new SimpleCacheAdapter(new ArrayCache()), 2, 5);
         $middleware = $this->createRateLimiter($counter, new LimitAlways());
 
         // last allowed request
@@ -116,7 +116,7 @@ final class MiddlewareTest extends TestCase
 
     public function testWithLimitingPerUser(): void
     {
-        $counter = new Counter(new ArrayCache(), 2, 5);
+        $counter = new Counter(new SimpleCacheAdapter(new ArrayCache()), 2, 5);
         $middleware = $this->createRateLimiter($counter, new LimitPerIp());
 
         // last allowed request
@@ -170,7 +170,7 @@ final class MiddlewareTest extends TestCase
     public function testWithLimitingFunction(): void
     {
         // test unlimited requests for always unique id
-        $counter = new Counter(new ArrayCache(), 2, 5);
+        $counter = new Counter(new SimpleCacheAdapter(new ArrayCache()), 2, 5);
         $middleware = $this->createRateLimiter(
             $counter,
             new LimitCallback(function (ServerRequestInterface $_request): string {
@@ -190,7 +190,7 @@ final class MiddlewareTest extends TestCase
         }
 
         // test limited requests for always same id
-        $counter = new Counter(new ArrayCache(), 2, 5);
+        $counter = new Counter(new SimpleCacheAdapter(new ArrayCache()), 2, 5);
         $middleware = $this->createRateLimiter(
             $counter,
             new LimitCallback(function (ServerRequestInterface $_request): string {

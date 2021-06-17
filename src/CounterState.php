@@ -4,15 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\RateLimiter;
 
-/**
- * @psalm-immutable
- */
 final class CounterState
 {
-    public int $limit;
-    public int $remaining;
-    public int $resetTime;
-    public bool $isLimitReached;
+    private int $limit;
+    private int $remaining;
+    private int $resetTime;
 
     /**
      * @param int $limit The maximum number of requests allowed with a time period.
@@ -24,6 +20,34 @@ final class CounterState
         $this->limit = $limit;
         $this->remaining = $remaining;
         $this->resetTime = $resetTime;
-        $this->isLimitReached = 0 === $remaining;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLimit(): int
+    {
+        return $this->limit;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRemaining(): int
+    {
+        return $this->remaining;
+    }
+
+    /**
+     * @return int
+     */
+    public function getResetTime(): int
+    {
+        return $this->resetTime;
+    }
+
+    public function isLimitReached(): bool
+    {
+        return 0 === $this->remaining;
     }
 }

@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Yiisoft\Yii\RateLimiter;
 
 use InvalidArgumentException;
-use Psr\SimpleCache\CacheInterface;
+use Yiisoft\Yii\RateLimiter\Storage\StorageInterface;
+use Yiisoft\Yii\RateLimiter\Time\MicrotimeTimer;
+use Yiisoft\Yii\RateLimiter\Time\TimerInterface;
 
 /**
  * Counter implements generic cell rate limit algorithm (GCRA) that ensures that after reaching the limit further
@@ -18,8 +20,6 @@ final class Counter implements CounterInterface
     private const DEFAULT_TTL = 86400;
 
     private const ID_PREFIX = 'rate-limiter-';
-
-    private const MILLISECONDS_PER_SECOND = 1000;
 
     /**
      * @var int Period to apply limit to.
@@ -34,20 +34,27 @@ final class Counter implements CounterInterface
      */
     private float $incrementIntervalInMilliseconds;
 
-    private CacheInterface $storage;
+    private StorageInterface $storage;
 
     private int $ttlInSeconds;
     private string $cachePrefix;
 
+    private TimerInterface $timer;
+
     /**
+     * @param StorageInterface $storage
      * @param int $limit Maximum number of increments that could be performed before increments are limited.
      * @param int $periodInSeconds Period to apply limit to.
+     * @param int $ttlInSeconds
+     * @param TimerInterface|null $timer
+     * @param string $cachePrefix
      */
     public function __construct(
-        CacheInterface $storage,
+        StorageInterface $storage,
         int $limit,
         int $periodInSeconds,
         int $ttlInSeconds = self::DEFAULT_TTL,
+        ?TimerInterface $timer = null,
         string $cachePrefix = self::ID_PREFIX
     ) {
         if ($limit < 1) {
@@ -59,10 +66,11 @@ final class Counter implements CounterInterface
         }
 
         $this->limit = $limit;
-        $this->periodInMilliseconds = $periodInSeconds * self::MILLISECONDS_PER_SECOND;
+        $this->periodInMilliseconds = $periodInSeconds * MILLISECONDS_PER_SECOND;
         $this->storage = $storage;
         $this->ttlInSeconds = $ttlInSeconds;
         $this->cachePrefix = $cachePrefix;
+        $this->timer = $timer ?: new MicrotimeTimer();
 
         $this->incrementIntervalInMilliseconds = (float)($this->periodInMilliseconds / $this->limit);
     }
@@ -74,7 +82,7 @@ final class Counter implements CounterInterface
     {
         // Last increment time.
         // In GCRA it's known as arrival time.
-        $lastIncrementTimeInMilliseconds = $this->currentTimeInMilliseconds();
+        $lastIncrementTimeInMilliseconds = $this->timer->nowInMilliseconds();
 
         $theoreticalNextIncrementTime = $this->calculateTheoreticalNextIncrementTime(
             $lastIncrementTimeInMilliseconds,
@@ -92,6 +100,9 @@ final class Counter implements CounterInterface
     }
 
     /**
+     * @param int $lastIncrementTimeInMilliseconds
+     * @param float $storedTheoreticalNextIncrementTime
+     *
      * @return float Theoretical increment time that would be expected from equally spaced increments at exactly rate
      * limit. In GCRA it is known as TAT, theoretical arrival time.
      */
@@ -104,6 +115,9 @@ final class Counter implements CounterInterface
     }
 
     /**
+     * @param int $lastIncrementTimeInMilliseconds
+     * @param float $theoreticalNextIncrementTime
+     *
      * @return int The number of remaining requests in the current time period.
      */
     private function calculateRemaining(int $lastIncrementTimeInMilliseconds, float $theoreticalNextIncrementTime): int
@@ -123,20 +137,17 @@ final class Counter implements CounterInterface
 
     private function storeTheoreticalNextIncrementTime(string $id, float $theoreticalNextIncrementTime): void
     {
-        $this->storage->set($this->getCacheKey($id), $theoreticalNextIncrementTime, $this->ttlInSeconds);
+        $this->storage->save($this->getCacheKey($id), $theoreticalNextIncrementTime, $this->ttlInSeconds);
     }
 
     /**
+     * @param float $theoreticalNextIncrementTime
+     *
      * @return int Timestamp to wait until the rate limit resets.
      */
     private function calculateResetAfter(float $theoreticalNextIncrementTime): int
     {
-        return (int)($theoreticalNextIncrementTime / self::MILLISECONDS_PER_SECOND);
-    }
-
-    private function currentTimeInMilliseconds(): int
-    {
-        return (int)round(microtime(true) * self::MILLISECONDS_PER_SECOND);
+        return (int)($theoreticalNextIncrementTime / MILLISECONDS_PER_SECOND);
     }
 
     /**
