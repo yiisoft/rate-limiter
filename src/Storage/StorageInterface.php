@@ -10,8 +10,6 @@ interface StorageInterface
      * @param string $key
      * @param mixed $value
      * @param int $ttl
-     *
-     * @return void
      */
     public function save(string $key, $value, int $ttl): void;
 

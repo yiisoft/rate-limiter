@@ -23,7 +23,7 @@ final class CounterState
     }
 
     /**
-     * @return int
+     * @return int The maximum number of requests allowed with a time period.
      */
     public function getLimit(): int
     {
@@ -31,7 +31,7 @@ final class CounterState
     }
 
     /**
-     * @return int
+     * @return int The number of remaining requests in the current time period.
      */
     public function getRemaining(): int
     {
@@ -39,13 +39,16 @@ final class CounterState
     }
 
     /**
-     * @return int
+     * @return int Timestamp to wait until the rate limit resets.
      */
     public function getResetTime(): int
     {
         return $this->resetTime;
     }
 
+    /**
+     * @return bool If requests limit is reached.
+     */
     public function isLimitReached(): bool
     {
         return 0 === $this->remaining;
