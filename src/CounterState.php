@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\RateLimiter;
 
+/**
+ * Rate limiter counter state stores information about when the next request won't be limited.
+ */
 final class CounterState
 {
     private int $limit;
