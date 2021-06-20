@@ -17,10 +17,11 @@ use Yiisoft\Yii\RateLimiter\Time\TimerInterface;
  */
 final class Counter implements CounterInterface
 {
-    private const MILLISECONDS_PER_SECOND = 1000;
     private const DEFAULT_TTL = 86400;
 
     private const ID_PREFIX = 'rate-limiter-';
+
+    private const MILLISECONDS_PER_SECOND = 1000;
 
     /**
      * @var int Period to apply limit to.
