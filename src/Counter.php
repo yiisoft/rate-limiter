@@ -17,6 +17,7 @@ use Yiisoft\Yii\RateLimiter\Time\TimerInterface;
  */
 final class Counter implements CounterInterface
 {
+    private const MILLISECONDS_PER_SECOND = 1000;
     private const DEFAULT_TTL = 86400;
 
     private const ID_PREFIX = 'rate-limiter-';
@@ -66,7 +67,7 @@ final class Counter implements CounterInterface
         }
 
         $this->limit = $limit;
-        $this->periodInMilliseconds = $periodInSeconds * MILLISECONDS_PER_SECOND;
+        $this->periodInMilliseconds = $periodInSeconds * self::MILLISECONDS_PER_SECOND;
         $this->storage = $storage;
         $this->ttlInSeconds = $ttlInSeconds;
         $this->cachePrefix = $cachePrefix;
@@ -147,7 +148,7 @@ final class Counter implements CounterInterface
      */
     private function calculateResetAfter(float $theoreticalNextIncrementTime): int
     {
-        return (int)($theoreticalNextIncrementTime / MILLISECONDS_PER_SECOND);
+        return (int)($theoreticalNextIncrementTime / self::MILLISECONDS_PER_SECOND);
     }
 
     /**

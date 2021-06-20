@@ -43,10 +43,7 @@
     "autoload": {
         "psr-4": {
             "Yiisoft\\Yii\\RateLimiter\\": "src"
-        },
-        "files": [
-            "src/rate_limit.php"
-        ]
+        }
     },
     "autoload-dev": {
         "psr-4": {
