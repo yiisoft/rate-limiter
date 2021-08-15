@@ -1,4 +1,4 @@
-# Yii Rate Limiter Middleware Change Log
+# Yii Rate Limiter Change Log
 
 
 ## 2.0.0 under development
