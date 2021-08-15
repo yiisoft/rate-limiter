@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\RateLimiter\Tests;
+namespace Yiisoft\Yii\RateLimiter\Storage;
 
 use Psr\SimpleCache\CacheInterface;
-use Yiisoft\Yii\RateLimiter\Storage\StorageInterface;
 
-final class SimpleCacheAdapter implements StorageInterface
+final class SimpleCacheStorage implements StorageInterface
 {
     private CacheInterface $cache;
 
