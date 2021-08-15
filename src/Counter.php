@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Yiisoft\Yii\RateLimiter;
 
 use InvalidArgumentException;
-use LogicException;
-use Psr\SimpleCache\CacheInterface;
+use Yiisoft\Yii\RateLimiter\Storage\StorageInterface;
+use Yiisoft\Yii\RateLimiter\Time\MicrotimeTimer;
+use Yiisoft\Yii\RateLimiter\Time\TimerInterface;
 
 /**
  * Counter implements generic cell rate limit algorithm (GCRA) that ensures that after reaching the limit further
@@ -35,18 +36,29 @@ final class Counter implements CounterInterface
      */
     private float $incrementIntervalInMilliseconds;
 
-    private ?string $id = null;
+    private StorageInterface $storage;
 
-    private CacheInterface $storage;
+    private int $storageTtlInSeconds;
+    private string $storagePrefix;
 
-    private int $ttlInSeconds = self::DEFAULT_TTL;
+    private TimerInterface $timer;
 
     /**
+     * @param StorageInterface $storage Storage to use for counter values.
      * @param int $limit Maximum number of increments that could be performed before increments are limited.
      * @param int $periodInSeconds Period to apply limit to.
+     * @param int $ttlInSeconds Storage TTL. Should be higher than `$periodInSeconds`.
+     * @param string $storagePrefix Storage prefix.
+     * @param TimerInterface|null $timer Timer instance to get current time from.
      */
-    public function __construct(int $limit, int $periodInSeconds, CacheInterface $storage)
-    {
+    public function __construct(
+        StorageInterface $storage,
+        int $limit,
+        int $periodInSeconds,
+        int $ttlInSeconds = self::DEFAULT_TTL,
+        string $storagePrefix = self::ID_PREFIX,
+        ?TimerInterface $timer = null
+    ) {
         if ($limit < 1) {
             throw new InvalidArgumentException('The limit must be a positive value.');
         }
@@ -58,62 +70,41 @@ final class Counter implements CounterInterface
         $this->limit = $limit;
         $this->periodInMilliseconds = $periodInSeconds * self::MILLISECONDS_PER_SECOND;
         $this->storage = $storage;
+        $this->storageTtlInSeconds = $ttlInSeconds;
+        $this->storagePrefix = $storagePrefix;
+        $this->timer = $timer ?: new MicrotimeTimer();
 
         $this->incrementIntervalInMilliseconds = (float)($this->periodInMilliseconds / $this->limit);
     }
 
-    public function setId(string $id): void
-    {
-        $this->id = $id;
-    }
-
     /**
-     * @param int $secondsTTL Cache TTL that is used to store counter values.
-     * Default is one day.
-     * Note that period can not exceed TTL.
+     * {@inheritdoc}
      */
-    public function setTtlInSeconds(int $secondsTTL): void
+    public function hit(string $id): CounterState
     {
-        $this->ttlInSeconds = $secondsTTL;
-    }
-
-    /**
-     * @return string Cache key used to store the next increment time.
-     */
-    public function getCacheKey(): string
-    {
-        if ($this->id === null) {
-            throw new LogicException('The counter ID should be set.');
-        }
-
-        return self::ID_PREFIX . $this->id;
-    }
-
-    public function incrementAndGetState(): CounterState
-    {
-        if ($this->id === null) {
-            throw new LogicException('The counter ID should be set.');
-        }
-
         // Last increment time.
         // In GCRA it's known as arrival time.
-        $lastIncrementTimeInMilliseconds = $this->currentTimeInMilliseconds();
+        $lastIncrementTimeInMilliseconds = $this->timer->nowInMilliseconds();
 
         $theoreticalNextIncrementTime = $this->calculateTheoreticalNextIncrementTime(
             $lastIncrementTimeInMilliseconds,
-            $this->getLastStoredTheoreticalNextIncrementTime($lastIncrementTimeInMilliseconds)
+            $this->getLastStoredTheoreticalNextIncrementTime($id, $lastIncrementTimeInMilliseconds)
         );
+
         $remaining = $this->calculateRemaining($lastIncrementTimeInMilliseconds, $theoreticalNextIncrementTime);
         $resetAfter = $this->calculateResetAfter($theoreticalNextIncrementTime);
 
         if ($remaining >= 1) {
-            $this->storeTheoreticalNextIncrementTime($theoreticalNextIncrementTime);
+            $this->storeTheoreticalNextIncrementTime($id, $theoreticalNextIncrementTime);
         }
 
         return new CounterState($this->limit, $remaining, $resetAfter);
     }
 
     /**
+     * @param int $lastIncrementTimeInMilliseconds
+     * @param float $storedTheoreticalNextIncrementTime
+     *
      * @return float Theoretical increment time that would be expected from equally spaced increments at exactly rate
      * limit. In GCRA it is known as TAT, theoretical arrival time.
      */
@@ -126,6 +117,9 @@ final class Counter implements CounterInterface
     }
 
     /**
+     * @param int $lastIncrementTimeInMilliseconds
+     * @param float $theoreticalNextIncrementTime
+     *
      * @return int The number of remaining requests in the current time period.
      */
     private function calculateRemaining(int $lastIncrementTimeInMilliseconds, float $theoreticalNextIncrementTime): int
@@ -138,17 +132,19 @@ final class Counter implements CounterInterface
         );
     }
 
-    private function getLastStoredTheoreticalNextIncrementTime(int $lastIncrementTimeInMilliseconds): float
+    private function getLastStoredTheoreticalNextIncrementTime(string $id, int $lastIncrementTimeInMilliseconds): float
     {
-        return (float)$this->storage->get($this->getCacheKey(), $lastIncrementTimeInMilliseconds);
+        return (float)$this->storage->get($this->getStorageKey($id), $lastIncrementTimeInMilliseconds);
     }
 
-    private function storeTheoreticalNextIncrementTime(float $theoreticalNextIncrementTime): void
+    private function storeTheoreticalNextIncrementTime(string $id, float $theoreticalNextIncrementTime): void
     {
-        $this->storage->set($this->getCacheKey(), $theoreticalNextIncrementTime, $this->ttlInSeconds);
+        $this->storage->save($this->getStorageKey($id), $theoreticalNextIncrementTime, $this->storageTtlInSeconds);
     }
 
     /**
+     * @param float $theoreticalNextIncrementTime
+     *
      * @return int Timestamp to wait until the rate limit resets.
      */
     private function calculateResetAfter(float $theoreticalNextIncrementTime): int
@@ -156,8 +152,13 @@ final class Counter implements CounterInterface
         return (int)($theoreticalNextIncrementTime / self::MILLISECONDS_PER_SECOND);
     }
 
-    private function currentTimeInMilliseconds(): int
+    /**
+     * @param string $id
+     *
+     * @return string Storage key used to store the next increment time.
+     */
+    private function getStorageKey(string $id): string
     {
-        return (int)round(microtime(true) * self::MILLISECONDS_PER_SECOND);
+        return $this->storagePrefix . $id;
     }
 }

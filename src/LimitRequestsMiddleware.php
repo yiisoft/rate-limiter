@@ -10,6 +10,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Http\Status;
+use Yiisoft\Yii\RateLimiter\Policy\LimitPerIp;
+use Yiisoft\Yii\RateLimiter\Policy\LimitPolicyInterface;
 
 /**
  * RateLimiter helps to prevent abuse by limiting the number of requests that could be me made consequentially.
@@ -20,63 +22,35 @@ use Yiisoft\Http\Status;
  *
  * @psalm-type CounterIdCallback = callable(ServerRequestInterface):string
  */
-final class Middleware implements MiddlewareInterface
+final class LimitRequestsMiddleware implements MiddlewareInterface
 {
     private CounterInterface $counter;
 
     private ResponseFactoryInterface $responseFactory;
 
-    private ?string $counterId = null;
+    private LimitPolicyInterface $limitingPolicy;
 
-    /**
-     * @var callable|null
-     * @psalm-var CounterIdCallback|null
-     */
-    private $counterIdCallback;
-
-    public function __construct(CounterInterface $counter, ResponseFactoryInterface $responseFactory)
-    {
+    public function __construct(
+        CounterInterface $counter,
+        ResponseFactoryInterface $responseFactory,
+        ?LimitPolicyInterface $limitingPolicy = null
+    ) {
         $this->counter = $counter;
         $this->responseFactory = $responseFactory;
+        $this->limitingPolicy = $limitingPolicy ?: new LimitPerIp();
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $this->counter->setId($this->generateId($request));
-        $result = $this->counter->incrementAndGetState();
+        $state = $this->counter->hit($this->limitingPolicy->fingerprint($request));
 
-        if ($result->isLimitReached()) {
+        if ($state->isLimitReached()) {
             $response = $this->createErrorResponse();
         } else {
             $response = $handler->handle($request);
         }
 
-        return $this->addHeaders($response, $result);
-    }
-
-    /**
-     * @param callable|null $callback Callback to use for generating counter ID. Counters with non-equal IDs
-     * are counted separately.
-     *
-     * @psalm-param CounterIdCallback $callback
-     */
-    public function withCounterIdCallback(?callable $callback): self
-    {
-        $new = clone $this;
-        $new->counterIdCallback = $callback;
-
-        return $new;
-    }
-
-    /**
-     * @param string $id Counter ID. Counters with non-equal IDs are counted separately.
-     */
-    public function withCounterId(string $id): self
-    {
-        $new = clone $this;
-        $new->counterId = $id;
-
-        return $new;
+        return $this->addHeaders($response, $state);
     }
 
     private function createErrorResponse(): ResponseInterface
@@ -85,20 +59,6 @@ final class Middleware implements MiddlewareInterface
         $response->getBody()->write(Status::TEXTS[Status::TOO_MANY_REQUESTS]);
 
         return $response;
-    }
-
-    private function generateId(ServerRequestInterface $request): string
-    {
-        if ($this->counterIdCallback !== null) {
-            return ($this->counterIdCallback)($request);
-        }
-
-        return $this->counterId ?? $this->generateIdFromRequest($request);
-    }
-
-    private function generateIdFromRequest(ServerRequestInterface $request): string
-    {
-        return strtolower($request->getMethod() . '-' . $request->getUri()->getPath());
     }
 
     private function addHeaders(ResponseInterface $response, CounterState $result): ResponseInterface
