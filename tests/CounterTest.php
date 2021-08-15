@@ -8,13 +8,14 @@ use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Yii\RateLimiter\Counter;
+use Yiisoft\Yii\RateLimiter\Storage\SimpleCacheStorage;
 use Yiisoft\Yii\RateLimiter\Time\MicrotimeTimer;
 
 final class CounterTest extends TestCase
 {
     public function testStatisticsShouldBeCorrectWhenLimitIsNotReached(): void
     {
-        $counter = new Counter(new SimpleCacheAdapter(new ArrayCache()), 2, 5);
+        $counter = new Counter(new SimpleCacheStorage(new ArrayCache()), 2, 5);
 
         $statistics = $counter->hit('key');
         $this->assertEquals(2, $statistics->getLimit());
@@ -25,7 +26,7 @@ final class CounterTest extends TestCase
 
     public function testStatisticsShouldBeCorrectWhenLimitIsReached(): void
     {
-        $counter = new Counter(new SimpleCacheAdapter(new ArrayCache()), 2, 4);
+        $counter = new Counter(new SimpleCacheStorage(new ArrayCache()), 2, 4);
 
         $statistics = $counter->hit('key');
         $this->assertEquals(2, $statistics->getLimit());
@@ -43,13 +44,13 @@ final class CounterTest extends TestCase
     public function testShouldNotBeAbleToSetInvalidLimit(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        new Counter(new SimpleCacheAdapter(new ArrayCache()), 0, 60);
+        new Counter(new SimpleCacheStorage(new ArrayCache()), 0, 60);
     }
 
     public function testShouldNotBeAbleToSetInvalidPeriod(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        new Counter(new SimpleCacheAdapter(new ArrayCache()), 10, 0);
+        new Counter(new SimpleCacheStorage(new ArrayCache()), 10, 0);
     }
 
     public function testIncrementMustBeUniformAfterLimitIsReached(): void
@@ -58,7 +59,7 @@ final class CounterTest extends TestCase
             $this->markTestSkipped('On Windows, the "usleep()" function used in this test may not work correctly.');
         }
 
-        $counter = new Counter(new SimpleCacheAdapter(new ArrayCache()), 10, 1);
+        $counter = new Counter(new SimpleCacheStorage(new ArrayCache()), 10, 1);
 
         for ($i = 0; $i < 10; $i++) {
             $counter->hit('key');
@@ -73,7 +74,7 @@ final class CounterTest extends TestCase
 
     public function testCustomTtl(): void
     {
-        $cache = new SimpleCacheAdapter(new ArrayCache());
+        $cache = new SimpleCacheStorage(new ArrayCache());
 
         $counter = new Counter(
             $cache,
