@@ -38,26 +38,26 @@ final class Counter implements CounterInterface
 
     private StorageInterface $storage;
 
-    private int $ttlInSeconds;
-    private string $cachePrefix;
+    private int $storageTtlInSeconds;
+    private string $storagePrefix;
 
     private TimerInterface $timer;
 
     /**
-     * @param StorageInterface $storage
+     * @param StorageInterface $storage Storage to use for counter values.
      * @param int $limit Maximum number of increments that could be performed before increments are limited.
      * @param int $periodInSeconds Period to apply limit to.
-     * @param int $ttlInSeconds
-     * @param TimerInterface|null $timer
-     * @param string $cachePrefix
+     * @param int $ttlInSeconds Storage TTL. Should be higher than `$periodInSeconds`.
+     * @param string $storagePrefix Storage prefix.
+     * @param TimerInterface|null $timer Timer instance to get current time from.
      */
     public function __construct(
         StorageInterface $storage,
         int $limit,
         int $periodInSeconds,
         int $ttlInSeconds = self::DEFAULT_TTL,
+        string $storagePrefix = self::ID_PREFIX,
         ?TimerInterface $timer = null,
-        string $cachePrefix = self::ID_PREFIX
     ) {
         if ($limit < 1) {
             throw new InvalidArgumentException('The limit must be a positive value.');
@@ -70,8 +70,8 @@ final class Counter implements CounterInterface
         $this->limit = $limit;
         $this->periodInMilliseconds = $periodInSeconds * self::MILLISECONDS_PER_SECOND;
         $this->storage = $storage;
-        $this->ttlInSeconds = $ttlInSeconds;
-        $this->cachePrefix = $cachePrefix;
+        $this->storageTtlInSeconds = $ttlInSeconds;
+        $this->storagePrefix = $storagePrefix;
         $this->timer = $timer ?: new MicrotimeTimer();
 
         $this->incrementIntervalInMilliseconds = (float)($this->periodInMilliseconds / $this->limit);
@@ -134,12 +134,12 @@ final class Counter implements CounterInterface
 
     private function getLastStoredTheoreticalNextIncrementTime(string $id, int $lastIncrementTimeInMilliseconds): float
     {
-        return (float)$this->storage->get($this->getCacheKey($id), $lastIncrementTimeInMilliseconds);
+        return (float)$this->storage->get($this->getStorageKey($id), $lastIncrementTimeInMilliseconds);
     }
 
     private function storeTheoreticalNextIncrementTime(string $id, float $theoreticalNextIncrementTime): void
     {
-        $this->storage->save($this->getCacheKey($id), $theoreticalNextIncrementTime, $this->ttlInSeconds);
+        $this->storage->save($this->getStorageKey($id), $theoreticalNextIncrementTime, $this->storageTtlInSeconds);
     }
 
     /**
@@ -155,10 +155,10 @@ final class Counter implements CounterInterface
     /**
      * @param string $id
      *
-     * @return string Cache key used to store the next increment time.
+     * @return string Storage key used to store the next increment time.
      */
-    private function getCacheKey(string $id): string
+    private function getStorageKey(string $id): string
     {
-        return $this->cachePrefix . $id;
+        return $this->storagePrefix . $id;
     }
 }

@@ -61,6 +61,7 @@ final class CounterTest extends TestCase
             10,
             1,
             86400,
+            'rate-limiter-',
             $timer
         );
 
@@ -80,13 +81,14 @@ final class CounterTest extends TestCase
 
     public function testCustomTtl(): void
     {
-        $cache = new SimpleCacheStorage(new ArrayCache());
+        $storage = new SimpleCacheStorage(new ArrayCache());
 
         $counter = new Counter(
-            $cache,
+            $storage,
             1,
             1,
             1,
+            'rate-limiter-',
             new FrozenTimeTimer()
         );
 
@@ -94,6 +96,6 @@ final class CounterTest extends TestCase
 
         FrozenTimeTimer::setTimeMark((new MicrotimeTimer())->nowInMilliseconds() + 2);
 
-        self::assertNull($cache->get('rate-limiter-test'));
+        self::assertNull($storage->get('rate-limiter-test'));
     }
 }
