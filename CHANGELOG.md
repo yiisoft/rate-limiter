@@ -1,9 +1,9 @@
 # Yii Rate Limiter Middleware Change Log
 
 
-## 1.0.2 under development
+## 2.0.0 under development
 
-- no changes in this release.
+- Enh #19: Introduce `LimitPolicyInterface`, `StorageInterface`, `TimerInterface`. Rename `Middleware` to `LimitRequestsMiddleware` (kafkiansky, samdark)
 
 ## 1.0.1 June 08, 2021
 
