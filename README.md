@@ -44,30 +44,57 @@ use Yiisoft\Yii\RateLimiter\Policy\LimitAlways;
 use Yiisoft\Yii\RateLimiter\Policy\LimitPerIp;
 use Yiisoft\Yii\RateLimiter\Policy\LimitCallback;
 use Yiisoft\Yii\RateLimiter\Storage\StorageInterface;
+use Yiisoft\Yii\RateLimiter\Storage\SimpleCacheStorage;
 
 /** @var StorageInterface $storage */
-$storage = new RedisStore(); // in e.g
+$storage = new SimpleCacheStorage($cache);
 
 $counter = new Counter($storage, 2, 5);
 $responseFactory = new Psr17Factory();
 
-$middleware = new LimitRequestsMiddleware($counter, $responseFactory, new LimitAlways());
-$middleware = new LimitRequestsMiddleware($counter, $responseFactory, new LimitPerIp());
-$middleware = new LimitRequestsMiddleware($counter, $responseFactory, new LimitCallback(function (ServerRequestInterface $request): string {
-    // in e.g return user id from database if authentication used.
-}));
 $middleware = new LimitRequestsMiddleware($counter, $responseFactory); // LimitPerIp by default
 ```
 
-In the above 2 is the maximum number of increments that could be performed before increments are limited and 5 is
-a period to apply limit to, in seconds.
+In the above 2 is the maximum number of counter increments (requests) that could be performed before increments
+are limited and 5 is a period to apply limit to, in seconds.
 
-The Counter implements [generic cell rate limit algorithm (GCRA)](https://en.wikipedia.org/wiki/Generic_cell_rate_algorithm)
+The `Counter` implements [generic cell rate limit algorithm (GCRA)](https://en.wikipedia.org/wiki/Generic_cell_rate_algorithm)
 that ensures that after reaching the limit further increments are distributed equally.
 
 > Note: While it is sufficiently effective, it is preferred to use [Nginx](https://www.nginx.com/blog/rate-limiting-nginx/)
 > or another webserver capabilities for rate limiting. This package allows rate-limiting in the project with deployment
 > environment you cannot control such as installable CMS. 
+
+### Implementing your own limiting policy
+
+There are two ready to use limiting policies available in the package:
+
+- `LimitAlways` - to count all incoming requests. 
+- `LimitPerIp` - to count requests from different IPs separately.
+
+These could be applied as follows:
+
+```php
+$middleware = new LimitRequestsMiddleware($counter, $responseFactory, new LimitPerIp());
+// or
+$middleware = new LimitRequestsMiddleware($counter, $responseFactory, new LimitAlways());
+```
+
+Easiest way to customize a policy is to use `LimitCallback`:
+
+```php
+$middleware = new LimitRequestsMiddleware($counter, $responseFactory, new LimitCallback(function (ServerRequestInterface $request): string {
+    // return user id from database if authentication id used i.e. limit guests and each authenticated user separately.
+}));
+```
+
+Another way it to implement `Yiisoft\Yii\RateLimiter\Policy\LimitPolicyInterface` and use it in a similar way as above.
+
+### Implementing your own counter storage
+
+By default, the package provides `\Yiisoft\Yii\RateLimiter\Storage\SimpleCacheStorage` that stores counters
+in any [PSR-16](https://www.php-fig.org/psr/psr-16/) cache. To have your own storage
+implement `Yiisoft\Yii\RateLimiter\Storage\StorageInterface`. 
 
 ## Testing
 
