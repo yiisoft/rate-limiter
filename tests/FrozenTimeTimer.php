@@ -6,17 +6,27 @@ namespace Yiisoft\Yii\RateLimiter\Tests;
 
 use Yiisoft\Yii\RateLimiter\Time\TimerInterface;
 
+/**
+ * Timer that we set manually.
+ */
 final class FrozenTimeTimer implements TimerInterface
 {
     private static ?int $mark = null;
 
+    /**
+     * Set time.
+     * @param int $mark Time in milliseconds.
+     */
     public static function setTimeMark(int $mark): void
     {
         self::$mark = $mark;
     }
 
+    /**
+     * @return int Current time in milliseconds.
+     */
     public function nowInMilliseconds(): int
     {
-        return null !== self::$mark ? self::$mark : (int)round(microtime(true));
+        return self::$mark ?? (int)round(microtime(true));
     }
 }

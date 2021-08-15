@@ -55,18 +55,24 @@ final class CounterTest extends TestCase
 
     public function testIncrementMustBeUniformAfterLimitIsReached(): void
     {
-        if (PHP_OS_FAMILY === 'Windows') {
-            $this->markTestSkipped('On Windows, the "usleep()" function used in this test may not work correctly.');
-        }
+        $timer = new FrozenTimeTimer();
+        $counter = new Counter(
+            new SimpleCacheStorage(new ArrayCache()),
+            10,
+            1,
+            86400,
+            $timer
+        );
 
-        $counter = new Counter(new SimpleCacheStorage(new ArrayCache()), 10, 1);
-
+        // Start with the limit reached.
         for ($i = 0; $i < 10; $i++) {
             $counter->hit('key');
         }
 
         for ($i = 0; $i < 5; $i++) {
-            usleep(110000); // period(microseconds) / limit + 10ms(cost work)
+            // Move timer forward for (period in milliseconds / limit)
+            // i.e. once in period / limit remaining allowance should be increased by 1.
+            FrozenTimeTimer::setTimeMark($timer->nowInMilliseconds() + 100);
             $statistics = $counter->hit('key');
             $this->assertEquals(1, $statistics->getRemaining());
         }
