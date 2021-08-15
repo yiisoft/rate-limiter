@@ -20,6 +20,7 @@ interface LimitPolicyInterface
      * with different fingerprints are counted and limited separately.
      *
      * @param ServerRequestInterface $request Request to get fingerprint for.
+     *
      * @return string A fingerprint based on the request information.
      */
     public function fingerprint(ServerRequestInterface $request): string;

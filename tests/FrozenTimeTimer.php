@@ -15,6 +15,7 @@ final class FrozenTimeTimer implements TimerInterface
 
     /**
      * Set time.
+     *
      * @param int $mark Time in milliseconds.
      */
     public static function setTimeMark(int $mark): void
@@ -23,6 +24,8 @@ final class FrozenTimeTimer implements TimerInterface
     }
 
     /**
+     * Get current time.
+     *
      * @return int Current time in milliseconds.
      */
     public function nowInMilliseconds(): int
