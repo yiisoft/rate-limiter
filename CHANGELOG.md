@@ -1,10 +1,8 @@
 # Yii Rate Limiter Change Log
 
-
 ## 2.0.1 under development
 
-- no changes in this release.
-
+- Chg #21: Update `yiisoft/http` dependency (devanych)
 
 ## 2.0.0 August 15, 2021
 
