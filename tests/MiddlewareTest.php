@@ -27,7 +27,9 @@ final class MiddlewareTest extends TestCase
     public function testSingleRequestWorksAsExpected(): void
     {
         $counter = new FakeCounter(100, 100);
-        $response = $this->createRateLimiter($counter)->process($this->createRequest(), $this->createRequestHandler());
+        $response = $this
+            ->createRateLimiter($counter)
+            ->process($this->createRequest(), $this->createRequestHandler());
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertEquals(
@@ -69,8 +71,12 @@ final class MiddlewareTest extends TestCase
             $response->getHeaders()
         );
 
-        $response->getBody()->rewind();
-        $this->assertSame(Status::TEXTS[Status::TOO_MANY_REQUESTS], $response->getBody()->getContents());
+        $response
+            ->getBody()
+            ->rewind();
+        $this->assertSame(Status::TEXTS[Status::TOO_MANY_REQUESTS], $response
+            ->getBody()
+            ->getContents());
     }
 
     public function testWithLimitingAll(): void

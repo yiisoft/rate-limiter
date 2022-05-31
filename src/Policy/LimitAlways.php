@@ -10,6 +10,8 @@ final class LimitAlways implements LimitPolicyInterface
 {
     public function fingerprint(ServerRequestInterface $request): string
     {
-        return sha1(mb_strtolower($request->getMethod() . '-' . $request->getUri()->getPath()));
+        return sha1(mb_strtolower($request->getMethod() . '-' . $request
+                ->getUri()
+                ->getPath()));
     }
 }
