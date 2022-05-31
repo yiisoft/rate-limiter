@@ -56,7 +56,9 @@ final class LimitRequestsMiddleware implements MiddlewareInterface
     private function createErrorResponse(): ResponseInterface
     {
         $response = $this->responseFactory->createResponse(Status::TOO_MANY_REQUESTS);
-        $response->getBody()->write(Status::TEXTS[Status::TOO_MANY_REQUESTS]);
+        $response
+            ->getBody()
+            ->write(Status::TEXTS[Status::TOO_MANY_REQUESTS]);
 
         return $response;
     }
