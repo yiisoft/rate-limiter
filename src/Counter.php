@@ -94,7 +94,6 @@ final class Counter implements CounterInterface
     }
 
     /**
-     *
      * @return float Theoretical increment time that would be expected from equally spaced increments at exactly rate
      * limit. In GCRA it is known as TAT, theoretical arrival time.
      */
@@ -107,7 +106,6 @@ final class Counter implements CounterInterface
     }
 
     /**
-     *
      * @return int The number of remaining requests in the current time period.
      */
     private function calculateRemaining(int $lastIncrementTimeInMilliseconds, float $theoreticalNextIncrementTime): int

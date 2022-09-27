@@ -180,7 +180,7 @@ final class MiddlewareTest extends TestCase
         $counter = new Counter(new SimpleCacheStorage(new ArrayCache()), 2, 5);
         $middleware = $this->createRateLimiter(
             $counter,
-            new LimitCallback(fn(ServerRequestInterface $_request): string => time() . uniqid() . uniqid())
+            new LimitCallback(fn (ServerRequestInterface $_request): string => time() . uniqid() . uniqid())
         );
 
         for ($i = 0; $i < 10; $i++) {
@@ -198,7 +198,7 @@ final class MiddlewareTest extends TestCase
         $counter = new Counter(new SimpleCacheStorage(new ArrayCache()), 2, 5);
         $middleware = $this->createRateLimiter(
             $counter,
-            new LimitCallback(fn(ServerRequestInterface $_request): string => 'id')
+            new LimitCallback(fn (ServerRequestInterface $_request): string => 'id')
         );
 
         $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
