@@ -24,19 +24,13 @@ use Yiisoft\Yii\RateLimiter\Policy\LimitPolicyInterface;
  */
 final class LimitRequestsMiddleware implements MiddlewareInterface
 {
-    private CounterInterface $counter;
-
-    private ResponseFactoryInterface $responseFactory;
-
     private LimitPolicyInterface $limitingPolicy;
 
     public function __construct(
-        CounterInterface $counter,
-        ResponseFactoryInterface $responseFactory,
+        private CounterInterface $counter,
+        private ResponseFactoryInterface $responseFactory,
         ?LimitPolicyInterface $limitingPolicy = null
     ) {
-        $this->counter = $counter;
-        $this->responseFactory = $responseFactory;
         $this->limitingPolicy = $limitingPolicy ?: new LimitPerIp();
     }
 

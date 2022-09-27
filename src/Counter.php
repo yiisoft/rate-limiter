@@ -36,27 +36,22 @@ final class Counter implements CounterInterface
      */
     private float $incrementIntervalInMilliseconds;
 
-    private StorageInterface $storage;
-
-    private int $storageTtlInSeconds;
-    private string $storagePrefix;
-
     private TimerInterface $timer;
 
     /**
      * @param StorageInterface $storage Storage to use for counter values.
      * @param int $limit Maximum number of increments that could be performed before increments are limited.
      * @param int $periodInSeconds Period to apply limit to.
-     * @param int $ttlInSeconds Storage TTL. Should be higher than `$periodInSeconds`.
+     * @param int $storageTtlInSeconds Storage TTL. Should be higher than `$periodInSeconds`.
      * @param string $storagePrefix Storage prefix.
      * @param TimerInterface|null $timer Timer instance to get current time from.
      */
     public function __construct(
-        StorageInterface $storage,
+        private StorageInterface $storage,
         int $limit,
         int $periodInSeconds,
-        int $ttlInSeconds = self::DEFAULT_TTL,
-        string $storagePrefix = self::ID_PREFIX,
+        private int $storageTtlInSeconds = self::DEFAULT_TTL,
+        private string $storagePrefix = self::ID_PREFIX,
         ?TimerInterface $timer = null
     ) {
         if ($limit < 1) {
@@ -69,9 +64,6 @@ final class Counter implements CounterInterface
 
         $this->limit = $limit;
         $this->periodInMilliseconds = $periodInSeconds * self::MILLISECONDS_PER_SECOND;
-        $this->storage = $storage;
-        $this->storageTtlInSeconds = $ttlInSeconds;
-        $this->storagePrefix = $storagePrefix;
         $this->timer = $timer ?: new MicrotimeTimer();
 
         $this->incrementIntervalInMilliseconds = (float)($this->periodInMilliseconds / $this->limit);
@@ -102,8 +94,6 @@ final class Counter implements CounterInterface
     }
 
     /**
-     * @param int $lastIncrementTimeInMilliseconds
-     * @param float $storedTheoreticalNextIncrementTime
      *
      * @return float Theoretical increment time that would be expected from equally spaced increments at exactly rate
      * limit. In GCRA it is known as TAT, theoretical arrival time.
@@ -117,8 +107,6 @@ final class Counter implements CounterInterface
     }
 
     /**
-     * @param int $lastIncrementTimeInMilliseconds
-     * @param float $theoreticalNextIncrementTime
      *
      * @return int The number of remaining requests in the current time period.
      */
@@ -143,8 +131,6 @@ final class Counter implements CounterInterface
     }
 
     /**
-     * @param float $theoreticalNextIncrementTime
-     *
      * @return int Timestamp to wait until the rate limit resets.
      */
     private function calculateResetAfter(float $theoreticalNextIncrementTime): int
@@ -153,8 +139,6 @@ final class Counter implements CounterInterface
     }
 
     /**
-     * @param string $id
-     *
      * @return string Storage key used to store the next increment time.
      */
     private function getStorageKey(string $id): string
