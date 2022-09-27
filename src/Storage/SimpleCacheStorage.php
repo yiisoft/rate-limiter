@@ -8,11 +8,8 @@ use Psr\SimpleCache\CacheInterface;
 
 final class SimpleCacheStorage implements StorageInterface
 {
-    private CacheInterface $cache;
-
-    public function __construct(CacheInterface $cache)
+    public function __construct(private CacheInterface $cache)
     {
-        $this->cache = $cache;
     }
 
     public function save(string $key, $value, int $ttl): void

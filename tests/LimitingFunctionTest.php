@@ -16,8 +16,6 @@ final class LimitingFunctionTest extends TestCase
     {
         self::expectDeprecationMessage('The id must be a non-empty-string.');
         self::expectException(\InvalidArgumentException::class);
-        (new LimitCallback(function (ServerRequestInterface $_request): string {
-            return '';
-        }))->fingerprint(new ServerRequest(Method::GET, '/'));
+        (new LimitCallback(fn (ServerRequestInterface $_request): string => ''))->fingerprint(new ServerRequest(Method::GET, '/'));
     }
 }
