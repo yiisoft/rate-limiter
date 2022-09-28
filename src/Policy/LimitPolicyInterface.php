@@ -10,8 +10,8 @@ use Psr\Http\Message\ServerRequestInterface;
  * Defines policy for limiting requests i.e. which requests should be hit-counted together and which should be
  * counted separately.
  *
- * For example, a user ID-based fingerprint will make rate limiting apply to current user requests only. An API token-based
- * fingerprint will make rate limiting to apply to all requests with the same token.
+ * For example, a user ID-based fingerprint will make rate limiting apply to current user requests only. An API
+ * token-based fingerprint will make rate limiting to apply to all requests with the same token.
  */
 interface LimitPolicyInterface
 {

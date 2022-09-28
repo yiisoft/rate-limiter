@@ -10,13 +10,9 @@ use Yiisoft\Yii\RateLimiter\CounterState;
 final class FakeCounter implements CounterInterface
 {
     private int $remaining;
-    private int $limit;
-    private int $reset;
 
-    public function __construct(int $limit, int $reset)
+    public function __construct(private int $limit, private int $reset)
     {
-        $this->reset = $reset;
-        $this->limit = $limit;
         $this->remaining = $limit;
     }
 

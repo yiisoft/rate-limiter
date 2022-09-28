@@ -24,7 +24,7 @@ interface StorageInterface
      * @param string $key The unique key of this counter in the storage.
      * @param mixed $default Default value to return if the counter does not exist.
      *
-     * @return mixed  The value of the counter from the storage, or $default in case of no counter with such key present.
+     * @return mixed The value of the counter from the storage, or $default in case of no counter with such key present.
      */
     public function get(string $key, $default = null);
 }

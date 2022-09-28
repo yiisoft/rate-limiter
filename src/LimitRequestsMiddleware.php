@@ -24,19 +24,13 @@ use Yiisoft\Yii\RateLimiter\Policy\LimitPolicyInterface;
  */
 final class LimitRequestsMiddleware implements MiddlewareInterface
 {
-    private CounterInterface $counter;
-
-    private ResponseFactoryInterface $responseFactory;
-
     private LimitPolicyInterface $limitingPolicy;
 
     public function __construct(
-        CounterInterface $counter,
-        ResponseFactoryInterface $responseFactory,
-        ?LimitPolicyInterface $limitingPolicy = null
+        private CounterInterface $counter,
+        private ResponseFactoryInterface $responseFactory,
+        LimitPolicyInterface $limitingPolicy = null
     ) {
-        $this->counter = $counter;
-        $this->responseFactory = $responseFactory;
         $this->limitingPolicy = $limitingPolicy ?: new LimitPerIp();
     }
 
@@ -56,9 +50,7 @@ final class LimitRequestsMiddleware implements MiddlewareInterface
     private function createErrorResponse(): ResponseInterface
     {
         $response = $this->responseFactory->createResponse(Status::TOO_MANY_REQUESTS);
-        $response
-            ->getBody()
-            ->write(Status::TEXTS[Status::TOO_MANY_REQUESTS]);
+        $response->getBody()->write(Status::TEXTS[Status::TOO_MANY_REQUESTS]);
 
         return $response;
     }
