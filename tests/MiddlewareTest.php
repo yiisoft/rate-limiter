@@ -237,7 +237,7 @@ final class MiddlewareTest extends TestCase
 
     private function createRateLimiter(
         CounterInterface $counter,
-        ?LimitPolicyInterface $limitingPolicy = null
+        LimitPolicyInterface $limitingPolicy = null
     ): LimitRequestsMiddleware {
         return new LimitRequestsMiddleware($counter, new Psr17Factory(), $limitingPolicy);
     }

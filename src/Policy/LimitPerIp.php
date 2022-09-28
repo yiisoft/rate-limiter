@@ -10,9 +10,7 @@ final class LimitPerIp implements LimitPolicyInterface
 {
     public function fingerprint(ServerRequestInterface $request): string
     {
-        return sha1(
-            mb_strtolower($request->getMethod() . '-' . $request->getUri()->getPath() . '-' . $this->getIp($request))
-        );
+        return sha1(strtolower($request->getMethod() . $request->getUri()->getPath() . $this->getIp($request)));
     }
 
     private function getIp(ServerRequestInterface $request): string
@@ -20,6 +18,6 @@ final class LimitPerIp implements LimitPolicyInterface
         /** @psalm-var array{REMOTE_ADDR?: string} $server */
         $server = $request->getServerParams();
 
-        return trim($server['REMOTE_ADDR'] ?? '', '[]');
+        return $server['REMOTE_ADDR'] ?? '';
     }
 }

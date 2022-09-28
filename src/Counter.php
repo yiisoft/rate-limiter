@@ -60,7 +60,7 @@ final class Counter implements CounterInterface
         $this->limit = $limit;
         $this->periodInMilliseconds = $periodInSeconds * self::MILLISECONDS_PER_SECOND;
         $this->timer = $timer ?: new MicrotimeTimer();
-        $this->incrementIntervalInMilliseconds = (float) ($this->periodInMilliseconds / $this->limit);
+        $this->incrementIntervalInMilliseconds = $this->periodInMilliseconds / $this->limit;
     }
 
     /**
