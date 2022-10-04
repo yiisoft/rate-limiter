@@ -9,6 +9,9 @@ use Psr\Http\Message\ServerRequestInterface;
 
 final class LimitCallback implements LimitPolicyInterface
 {
+   /**
+    * @psalm-param Closure(ServerRequestInterface) $receiver
+    */
     public function __construct(private Closure $receiver)
     {
     }
