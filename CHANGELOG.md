@@ -2,7 +2,7 @@
 
 ## 2.0.1 under development
 
-- Enh #25: Raise minimum `PHP` version to `8.0` (terabytesoftw)
+- Enh #25: Raise minimum `PHP` version to `8.0` (@terabytesoftw)
 - Chg #21: Update `yiisoft/http` dependency (devanych)
 
 ## 2.0.0 August 15, 2021
