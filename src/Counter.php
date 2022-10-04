@@ -47,7 +47,7 @@ final class Counter implements CounterInterface
         private int $periodInSeconds,
         private int $storageTtlInSeconds = self::DEFAULT_TTL,
         private string $storagePrefix = self::ID_PREFIX,
-        TimerInterface $timer = null
+        TimerInterface|null $timer = null
     ) {
         if ($limit < 1) {
             throw new InvalidArgumentException('The limit must be a positive value.');
