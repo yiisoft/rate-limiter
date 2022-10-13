@@ -10,6 +10,7 @@ use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Yii\RateLimiter\Counter;
 use Yiisoft\Yii\RateLimiter\Storage\SimpleCacheStorage;
 use Yiisoft\Yii\RateLimiter\Time\MicrotimeTimer;
+use Yiisoft\Yii\RateLimiter\Tests\Support\Assert;
 
 final class CounterTest extends TestCase
 {
@@ -97,5 +98,12 @@ final class CounterTest extends TestCase
         FrozenTimeTimer::setTimeMark((new MicrotimeTimer())->nowInMilliseconds() + 2);
 
         self::assertNull($storage->get('rate-limiter-test'));
+    }
+
+    public function testGetKey(): void
+    {
+        $counter = new Counter(new SimpleCacheStorage(new ArrayCache()), 1, 1, 1, 'rate-limiter-');
+
+        $this->assertSame('rate-limiter-key', Assert::invokeMethod($counter, 'getStorageKey', ['key']));
     }
 }

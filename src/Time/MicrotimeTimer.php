@@ -10,6 +10,6 @@ final class MicrotimeTimer implements TimerInterface
 
     public function nowInMilliseconds(): int
     {
-        return (int)round(microtime(true) * self::MILLISECONDS_PER_SECOND);
+        return (int) round(microtime(true) * self::MILLISECONDS_PER_SECOND);
     }
 }

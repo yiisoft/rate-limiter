@@ -16,7 +16,7 @@ interface StorageInterface
      * @param mixed $value The value of the counter.
      * @param int $ttl The TTL value of this counter.
      */
-    public function save(string $key, $value, int $ttl): void;
+    public function save(string $key, mixed $value, int $ttl): void;
 
     /**
      * Fetches a counter value from the storage.
@@ -24,7 +24,7 @@ interface StorageInterface
      * @param string $key The unique key of this counter in the storage.
      * @param mixed $default Default value to return if the counter does not exist.
      *
-     * @return mixed  The value of the counter from the storage, or $default in case of no counter with such key present.
+     * @return mixed The value of the counter from the storage, or $default in case of no counter with such key present.
      */
-    public function get(string $key, $default = null);
+    public function get(string $key, mixed $default = null): mixed;
 }

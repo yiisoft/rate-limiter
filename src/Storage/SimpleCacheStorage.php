@@ -8,19 +8,16 @@ use Psr\SimpleCache\CacheInterface;
 
 final class SimpleCacheStorage implements StorageInterface
 {
-    private CacheInterface $cache;
-
-    public function __construct(CacheInterface $cache)
+    public function __construct(private CacheInterface $cache)
     {
-        $this->cache = $cache;
     }
 
-    public function save(string $key, $value, int $ttl): void
+    public function save(string $key, mixed $value, int $ttl): void
     {
         $this->cache->set($key, $value, $ttl);
     }
 
-    public function get(string $key, $default = null)
+    public function get(string $key, mixed $default = null): mixed
     {
         return $this->cache->get($key, $default);
     }
