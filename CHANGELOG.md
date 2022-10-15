@@ -2,6 +2,7 @@
 
 ## 2.0.1 under development
 
+- Enh: Add composer require checker into CI
 - Enh #25: Raise minimum `PHP` version to `8.0` (@terabytesoftw)
 - Chg #21: Update `yiisoft/http` dependency (devanych)
 
