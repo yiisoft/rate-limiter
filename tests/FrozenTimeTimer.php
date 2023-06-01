@@ -11,6 +11,8 @@ use Yiisoft\Yii\RateLimiter\Time\TimerInterface;
  */
 final class FrozenTimeTimer implements TimerInterface
 {
+    private const MILLISECONDS_PER_SECOND = 1000;
+
     private static ?int $mark = null;
 
     /**
@@ -30,6 +32,6 @@ final class FrozenTimeTimer implements TimerInterface
      */
     public function nowInMilliseconds(): int
     {
-        return self::$mark ?? (int)round(microtime(true));
+        return self::$mark ?? (int)round(microtime(true) * self::MILLISECONDS_PER_SECOND);
     }
 }
