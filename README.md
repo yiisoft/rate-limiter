@@ -23,14 +23,14 @@ If too many requests are received from a user within the stated period of the ti
 
 ## Requirements
 
-- PHP 7.4 or higher.
+- PHP 8.0 or higher.
 
 ## Installation
 
 The package could be installed with composer:
 
 ```shell
-composer install yiisoft/rate-limiter --prefer-dist
+composer install yiisoft/rate-limiter
 ```
 
 ## General usage
