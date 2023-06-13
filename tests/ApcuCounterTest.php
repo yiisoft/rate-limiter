@@ -5,20 +5,31 @@ declare(strict_types=1);
 namespace Yiisoft\Yii\RateLimiter\Tests;
 
 use Yiisoft\Yii\RateLimiter\Counter;
-use Yiisoft\Yii\RateLimiter\Storage\SimpleCacheStorage;
+use Yiisoft\Yii\RateLimiter\Storage\ApcuStorage;
 use Yiisoft\Yii\RateLimiter\Storage\StorageInterface;
-use Yiisoft\Cache\ArrayCache;
+use Yiisoft\Yii\RateLimiter\Tests\FakeApcuStorage;
 
-final class CounterTest extends BaseCounterTest
+final class ApcuCounterTest extends BaseCounterTest
 {
     protected function createStorage(): StorageInterface
     {
-        return new SimpleCacheStorage(new ArrayCache());
+        return new ApcuStorage();
     }
+    protected function clearStorage(): bool
+    {
+        return apcu_clear_cache();
+    }
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->clearStorage();
+    }
+    
     public function testConcurrentHitsWithDirtyReading(): void
     {
         $timer = new FrozenTimeTimer();
-        $storage = new FakeSimpleCacheStorage(new ArrayCache(), 5);
+        $storage = new FakeApcuStorage(5);
         $limit_hits = 10;
         $counter = new Counter(
             $storage,
@@ -41,6 +52,6 @@ final class CounterTest extends BaseCounterTest
             }
         } while(true);
 
-        $this->assertGreaterThan($limit_hits, $total_hits);
+        $this->assertEquals($limit_hits, $total_hits);
     }
 }

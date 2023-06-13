@@ -112,21 +112,23 @@ final class Counter implements CounterInterface
     }
 
     /**
-     * @return float Theoretical increment time that would be expected from equally spaced increments at exactly rate
+     * @return int Theoretical increment time that would be expected from equally spaced increments at exactly rate
      * limit. In GCRA it is known as TAT, theoretical arrival time.
      */
     private function calculateTheoreticalNextIncrementTime(
         int $lastIncrementTimeInMilliseconds,
-        float $storedTheoreticalNextIncrementTime
-    ): float {
-        return max($lastIncrementTimeInMilliseconds, $storedTheoreticalNextIncrementTime) +
-            $this->incrementIntervalInMilliseconds;
+        int $storedTheoreticalNextIncrementTime
+    ): int {
+        return (int) (
+            max($lastIncrementTimeInMilliseconds, $storedTheoreticalNextIncrementTime) +
+            $this->incrementIntervalInMilliseconds
+        );
     }
 
     /**
      * @return int The number of remaining requests in the current time period.
      */
-    private function calculateRemaining(int $lastIncrementTimeInMilliseconds, float $theoreticalNextIncrementTime): int
+    private function calculateRemaining(int $lastIncrementTimeInMilliseconds, int $theoreticalNextIncrementTime): int
     {
         $incrementAllowedAt = $theoreticalNextIncrementTime - $this->periodInMilliseconds;
 
@@ -136,14 +138,14 @@ final class Counter implements CounterInterface
         );
     }
 
-    private function getLastStoredTheoreticalNextIncrementTime(string $id): float
+    private function getLastStoredTheoreticalNextIncrementTime(string $id): int
     {
-        return (float) $this->storage->get($this->getStorageKey($id));
+        return (int) $this->storage->get($this->getStorageKey($id));
     }
 
-    private function storeTheoreticalNextIncrementTime(string $id, float $theoreticalNextIncrementTime, float $lastStoredTheoreticalNextIncrementTime): bool
+    private function storeTheoreticalNextIncrementTime(string $id, int $theoreticalNextIncrementTime, int $lastStoredTheoreticalNextIncrementTime): bool
     {
-        if ($lastStoredTheoreticalNextIncrementTime > 0) {
+        if ($lastStoredTheoreticalNextIncrementTime != 0) {
             return $this->storage->saveCompareAndSwap(
                 $this->getStorageKey($id), 
                 $lastStoredTheoreticalNextIncrementTime, 
