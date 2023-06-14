@@ -11,10 +11,10 @@ final class FakeApcuStorage implements StorageInterface
 {
     private const DEFAULT_DIRTY_READ_COUNT = 8;
 
-    private int $dirty_read_value = 0;
-    private int $remaining_dirty_read_count = 0;
+    private int $dirtyReadValue = 0;
+    private int $remainingDirtyReadCount = 0;
     public function __construct(
-        private int $dirty_read_count = self::DEFAULT_DIRTY_READ_COUNT,
+        private int $dirtyReadCount = self::DEFAULT_DIRTY_READ_COUNT,
     )
     {
         if (!extension_loaded('apcu') || ini_get('apc.enabled') === '0') {
@@ -34,17 +34,17 @@ final class FakeApcuStorage implements StorageInterface
 
     public function get(string $key): mixed
     {
-        if ($this->remaining_dirty_read_count > 0 && $this->dirty_read_value != 0) {
-            $this->remaining_dirty_read_count--;
-            return $this->dirty_read_value;
+        if ($this->remainingDirtyReadCount > 0 && $this->dirtyReadValue != 0) {
+            $this->remainingDirtyReadCount--;
+            return $this->dirtyReadValue;
         }
 
-        $read_value = apcu_fetch($key);
-        if ($read_value) {
-            $this->dirty_read_value = $read_value;
-            $this->remaining_dirty_read_count = $this->dirty_read_count;
+        $readValue = apcu_fetch($key);
+        if ($readValue) {
+            $this->dirtyReadValue = $readValue;
+            $this->remainingDirtyReadCount = $this->dirtyReadCount;
         }
 
-        return $read_value;
+        return $readValue;
     }
 }
