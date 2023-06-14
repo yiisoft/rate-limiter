@@ -8,25 +8,40 @@ use Yiisoft\Yii\RateLimiter\Exception\CannotUseException;
 
 final class ApcuStorage implements StorageInterface
 {
-    public function __construct()
-    {
+    private const DEFAULT_FIX_PRECISION_RATE = 1000000;
+
+    /**
+     * @param int $fixPrecisionRate 
+     * floating point is not supported by apcu_cas of ACPu, so use it to improves precision.
+     */
+    public function __construct(
+        private int $fixPrecisionRate = self::DEFAULT_FIX_PRECISION_RATE
+    ) {
         if (!extension_loaded('apcu') || ini_get('apc.enabled') === '0') {
             throw new CannotUseException('APCu extension is not loaded or not enabled.');
         }
     }
 
-    public function saveIfNotExists(string $key, int $value, int $ttl): bool
+    public function saveIfNotExists(string $key, mixed $value, int $ttl): bool
     {
+        $value = (int) ($value * $this->fixPrecisionRate);
         return (bool)apcu_add($key, $value, $ttl);
     }
 
-    public function saveCompareAndSwap(string $key, int $oldValue, int $newValue, int $ttl): bool
+    public function saveCompareAndSwap(string $key, mixed $oldValue, mixed $newValue, int $ttl): bool
     {
+        $oldValue = (int) ($oldValue * $this->fixPrecisionRate);
+        $newValue = (int) ($newValue * $this->fixPrecisionRate);
         return  (bool)apcu_cas($key, $oldValue, $newValue);
     }
 
     public function get(string $key): mixed
     {
-        return apcu_fetch($key);
+        $value = apcu_fetch($key);
+        
+        if ($value != false) {
+            $value = floatval($value / $this->fixPrecisionRate);
+        }
+        return $value;
     }
 }

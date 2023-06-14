@@ -116,10 +116,10 @@ final class Counter implements CounterInterface
      * limit. In GCRA it is known as TAT, theoretical arrival time.
      */
     private function calculateTheoreticalNextIncrementTime(
-        int $lastIncrementTimeInMilliseconds,
-        int $storedTheoreticalNextIncrementTime
-    ): int {
-        return (int) (
+        float $lastIncrementTimeInMilliseconds,
+        float $storedTheoreticalNextIncrementTime
+    ): float {
+        return (float) (
             max($lastIncrementTimeInMilliseconds, $storedTheoreticalNextIncrementTime) +
             $this->incrementIntervalInMilliseconds
         );
@@ -128,7 +128,7 @@ final class Counter implements CounterInterface
     /**
      * @return int The number of remaining requests in the current time period.
      */
-    private function calculateRemaining(int $lastIncrementTimeInMilliseconds, int $theoreticalNextIncrementTime): int
+    private function calculateRemaining(float $lastIncrementTimeInMilliseconds, float $theoreticalNextIncrementTime): int
     {
         $incrementAllowedAt = $theoreticalNextIncrementTime - $this->periodInMilliseconds;
 
@@ -138,12 +138,12 @@ final class Counter implements CounterInterface
         );
     }
 
-    private function getLastStoredTheoreticalNextIncrementTime(string $id): int
+    private function getLastStoredTheoreticalNextIncrementTime(string $id): float
     {
-        return (int) $this->storage->get($this->getStorageKey($id));
+        return (float) $this->storage->get($this->getStorageKey($id));
     }
 
-    private function storeTheoreticalNextIncrementTime(string $id, int $theoreticalNextIncrementTime, int $lastStoredTheoreticalNextIncrementTime): bool
+    private function storeTheoreticalNextIncrementTime(string $id, float $theoreticalNextIncrementTime, float $lastStoredTheoreticalNextIncrementTime): bool
     {
         if ($lastStoredTheoreticalNextIncrementTime != 0) {
             return $this->storage->saveCompareAndSwap(

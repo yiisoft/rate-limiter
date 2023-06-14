@@ -11,21 +11,20 @@ final class FakeSimpleCacheStorage implements StorageInterface
 {
     private const DEFAULT_DIRTY_READ_COUNT = 8;
 
-    private int $dirtyReadValue = 0;
+    private float $dirtyReadValue = 0;
     private int $remainingDirtyReadCount = 0;
     public function __construct(
         private CacheInterface $cache,
         private int $dirtyReadCount = self::DEFAULT_DIRTY_READ_COUNT,
-    )
-    {
+    ) {
     }
 
-    public function saveIfNotExists(string $key, int $value, int $ttl): bool
+    public function saveIfNotExists(string $key, mixed $value, int $ttl): bool
     {
         return $this->cache->set($key, $value, $ttl);
     }
 
-    public function saveCompareAndSwap(string $key, int $oldValue, int $newValue, int $ttl): bool
+    public function saveCompareAndSwap(string $key, mixed $oldValue, mixed $newValue, int $ttl): bool
     {
         return $this->cache->set($key, $newValue, $ttl);
     }

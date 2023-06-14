@@ -46,7 +46,9 @@ abstract class StorageTest extends TestCase
 
         $storage->saveIfNotExists('exists_key', $want, self::DEFAULT_TTL);
 
-        $this->assertSame($storage->get('exists_key'), $want);
+        $result = $storage->get('exists_key');
+
+        $this->assertEquals($result, $want);
     }
     public function testSaveIfNotExistsWithNewKey(): void
     {

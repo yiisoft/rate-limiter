@@ -15,11 +15,11 @@ interface StorageInterface
      * the store supports expiring keys, the key will expire after the provided ttl.
      *
      * @param string $key The ID of the counter to store.
-     * @param integer $value The value of the counter.
+     * @param mixed $value The value of the counter.
      * @param integer $ttl The TTL value of this counter.
      * @return boolean
      */
-    public function saveIfNotExists(string $key, int $value, int $ttl): bool;
+    public function saveIfNotExists(string $key, mixed $value, int $ttl): bool;
 
     /**
      * Compares the old value of key to the value which was saved in the store. 
@@ -28,19 +28,19 @@ interface StorageInterface
      * the store supports expiring keys, the key will expire after the provided ttl.
      *
      * @param string $key The ID of the counter to store.
-     * @param integer $oldValue The old value of the counter.
-     * @param integer $newValue The new value of the counter.
+     * @param mixed $oldValue The old value of the counter.
+     * @param mixed $newValue The new value of the counter.
      * @param integer $ttl The TTL value of this counter.
      * @return boolean
      */
-    public function saveCompareAndSwap(string $key, int $oldValue, int $newValue, int $ttl): bool;
+    public function saveCompareAndSwap(string $key, mixed $oldValue, mixed $newValue, int $ttl): bool;
 
     /**
      * Fetches a counter value from the storage.
      *
      * @param string $key The unique key of this counter in the storage.
      *
-     * @return integer The value of the counter from the storage, or $default in case of no counter with such key present.
+     * @return mixed The value of the counter from the storage, or $default in case of no counter with such key present.
      */
     public function get(string $key): mixed;
 }
