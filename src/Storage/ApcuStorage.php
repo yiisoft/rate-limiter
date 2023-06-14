@@ -25,7 +25,7 @@ final class ApcuStorage implements StorageInterface
 
     public function saveIfNotExists(string $key, mixed $value, int $ttl): bool
     {
-        if ( (!is_int($value)) && !is_float($value)) {
+        if ((!is_int($value)) && !is_float($value)) {
             throw new InvalidArgumentException('The value must be int or float, is not supported by ApcuStorage');
         }
 
@@ -36,11 +36,11 @@ final class ApcuStorage implements StorageInterface
 
     public function saveCompareAndSwap(string $key, mixed $oldValue, mixed $newValue, int $ttl): bool
     {
-        if ( (!is_int($oldValue)) && !is_float($oldValue)) {
+        if ((!is_int($oldValue)) && !is_float($oldValue)) {
             throw new InvalidArgumentException('The oldValue must be int or float, is not supported by ApcuStorage');
         }
 
-        if ( (!is_int($newValue)) && !is_float($newValue)) {
+        if ((!is_int($newValue)) && !is_float($newValue)) {
             throw new InvalidArgumentException('The newValue must be int or float, is not supported by ApcuStorage');
         }
 

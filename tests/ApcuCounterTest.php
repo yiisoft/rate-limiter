@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Yii\RateLimiter\Tests;
 
 use Yiisoft\Yii\RateLimiter\Counter;
+use Yiisoft\Yii\RateLimiter\Exception\OutOfMaxAttemptsException;
 use Yiisoft\Yii\RateLimiter\Storage\ApcuStorage;
 use Yiisoft\Yii\RateLimiter\Storage\StorageInterface;
 use Yiisoft\Yii\RateLimiter\Tests\FakeApcuStorage;
@@ -25,7 +26,7 @@ final class ApcuCounterTest extends BaseCounterTest
 
         $this->clearStorage();
     }
-    
+
     public function testConcurrentHitsWithDirtyReading(): void
     {
         $timer = new FrozenTimeTimer();
@@ -53,5 +54,24 @@ final class ApcuCounterTest extends BaseCounterTest
         } while(true);
 
         $this->assertEquals($limit_hits, $total_hits);
+    }
+    public function testOutOfMaxAttemptsException(): void
+    {
+        $timer = new FrozenTimeTimer();
+        $storage = new FakeApcuStorage(2);
+        $limit_hits = 10;
+        $counter = new Counter(
+            $storage,
+            $limit_hits,
+            1,
+            86400,
+            'rate-limiter-',
+            $timer,
+            1
+        );
+        $counter->hit('key');
+        $counter->hit('key');
+        $this->expectException(OutOfMaxAttemptsException::class);
+        $counter->hit('key');
     }
 }
