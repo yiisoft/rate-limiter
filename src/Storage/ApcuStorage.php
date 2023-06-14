@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\RateLimiter\Storage;
 
+use InvalidArgumentException;
 use Yiisoft\Yii\RateLimiter\Exception\CannotUseException;
 
 final class ApcuStorage implements StorageInterface
@@ -12,7 +13,7 @@ final class ApcuStorage implements StorageInterface
 
     /**
      * @param int $fixPrecisionRate 
-     * floating point is not supported by apcu_cas of ACPu, so use it to improves precision.
+     * floating point is not supported by apcu_cas of ACPu, so use it to improve precision.
      */
     public function __construct(
         private int $fixPrecisionRate = self::DEFAULT_FIX_PRECISION_RATE
@@ -24,14 +25,28 @@ final class ApcuStorage implements StorageInterface
 
     public function saveIfNotExists(string $key, mixed $value, int $ttl): bool
     {
+        if ( (!is_int($value)) && !is_float($value)) {
+            throw new InvalidArgumentException('The value must be int or float, is not supported by ApcuStorage');
+        }
+
         $value = (int) ($value * $this->fixPrecisionRate);
+
         return (bool)apcu_add($key, $value, $ttl);
     }
 
     public function saveCompareAndSwap(string $key, mixed $oldValue, mixed $newValue, int $ttl): bool
     {
+        if ( (!is_int($oldValue)) && !is_float($oldValue)) {
+            throw new InvalidArgumentException('The oldValue must be int or float, is not supported by ApcuStorage');
+        }
+
+        if ( (!is_int($newValue)) && !is_float($newValue)) {
+            throw new InvalidArgumentException('The newValue must be int or float, is not supported by ApcuStorage');
+        }
+
         $oldValue = (int) ($oldValue * $this->fixPrecisionRate);
         $newValue = (int) ($newValue * $this->fixPrecisionRate);
+
         return  (bool)apcu_cas($key, $oldValue, $newValue);
     }
 
