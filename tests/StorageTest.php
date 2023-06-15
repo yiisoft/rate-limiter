@@ -94,7 +94,7 @@ abstract class StorageTest extends TestCase
         $this->assertFalse($result);
     }
 
-    public function testSaveCompareAndSwapWithExistsKeyAndOldValueDiffrent(): void
+    public function testSaveCompareAndSwapWithExistsKeyButOldValueDiffrent(): void
     {
         $storage = $this->getStorage();
 
@@ -115,7 +115,7 @@ abstract class StorageTest extends TestCase
         $this->assertFalse($result);
     }
 
-    public function testSaveCompareAndSwapWithExistsKeyButOldValueSame(): void
+    public function testSaveCompareAndSwapWithExistsKeyAndOldValueSame(): void
     {
         $storage = $this->getStorage();
 
