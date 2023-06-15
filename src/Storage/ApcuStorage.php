@@ -31,7 +31,7 @@ final class ApcuStorage implements StorageInterface
 
         $value = (int) ($value * $this->fixPrecisionRate);
 
-        return (bool)apcu_add($key, $value, $ttl);
+        return apcu_add($key, $value, $ttl);
     }
 
     public function saveCompareAndSwap(string $key, mixed $oldValue, mixed $newValue, int $ttl): bool
@@ -47,7 +47,7 @@ final class ApcuStorage implements StorageInterface
         $oldValue = (int) ($oldValue * $this->fixPrecisionRate);
         $newValue = (int) ($newValue * $this->fixPrecisionRate);
 
-        return  (bool)apcu_cas($key, $oldValue, $newValue);
+        return apcu_cas($key, $oldValue, $newValue);
     }
 
     public function get(string $key): mixed

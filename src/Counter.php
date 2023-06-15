@@ -119,10 +119,8 @@ final class Counter implements CounterInterface
         float $lastIncrementTimeInMilliseconds,
         float $storedTheoreticalNextIncrementTime
     ): float {
-        return (float) (
-            max($lastIncrementTimeInMilliseconds, $storedTheoreticalNextIncrementTime) +
-            $this->incrementIntervalInMilliseconds
-        );
+        return max($lastIncrementTimeInMilliseconds, $storedTheoreticalNextIncrementTime) +
+            $this->incrementIntervalInMilliseconds;
     }
 
     /**
