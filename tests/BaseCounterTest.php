@@ -14,7 +14,9 @@ use Yiisoft\Yii\RateLimiter\Tests\Support\Assert;
 abstract class BaseCounterTest extends TestCase
 {
     protected StorageInterface $storage;
+
     protected abstract function createStorage(): StorageInterface;
+
     protected function getStorage(): StorageInterface
     {
         if (empty($this->storage)) {
@@ -23,6 +25,7 @@ abstract class BaseCounterTest extends TestCase
 
         return $this->storage;
     }
+
     public function testStatisticsShouldBeCorrectWhenLimitIsNotReached(): void
     {
         $counter = new Counter($this->getStorage(), 2, 5);

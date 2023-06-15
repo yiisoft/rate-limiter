@@ -16,10 +16,12 @@ final class ApcuCounterTest extends BaseCounterTest
     {
         return new ApcuStorage();
     }
+
     protected function clearStorage(): bool
     {
         return apcu_clear_cache();
     }
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -55,6 +57,7 @@ final class ApcuCounterTest extends BaseCounterTest
 
         $this->assertEquals($limit_hits, $total_hits);
     }
+
     public function testOutOfMaxAttemptsException(): void
     {
         $timer = new FrozenTimeTimer();

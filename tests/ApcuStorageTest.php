@@ -15,15 +15,18 @@ class ApcuStorageTest extends StorageTest
     {
         return new ApcuStorage();
     }
+
     protected function clearStorage(): bool
     {
         return apcu_clear_cache();
     }
+
     public function testCannotUseExceptionWithAPCuNotEnabled(): void
     {
         $this->expectException(CannotUseException::class);
         throw new CannotUseException;
     }
+
     public function testInvalidArgumentExceptionWithSaveIfNotExists(): void
     {
         $storage = new ApcuStorage();
@@ -31,12 +34,18 @@ class ApcuStorageTest extends StorageTest
         $this->expectException(InvalidArgumentException::class);
         $storage->saveIfNotExists('key', 'string_value', parent::DEFAULT_TTL);
     }
-    public function testInvalidArgumentExceptionWithSaveCompareAndSwap(): void
+
+    public function testInvalidArgumentExceptionWithSaveCompareAndSwapOldValue(): void
     {
         $storage = new ApcuStorage();
 
         $this->expectException(InvalidArgumentException::class);
         $storage->saveCompareAndSwap('key', 'old_string_value', 1, parent::DEFAULT_TTL);
+    }
+
+    public function testInvalidArgumentExceptionWithSaveCompareAndSwapNewValue(): void
+    {
+        $storage = new ApcuStorage();
 
         $this->expectException(InvalidArgumentException::class);
         $storage->saveCompareAndSwap('key', 1, 'new_string_value', parent::DEFAULT_TTL);

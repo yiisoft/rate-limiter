@@ -26,18 +26,21 @@ abstract class StorageTest extends TestCase
 
         return $this->storage;
     }
+
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->clearStorage();
     }
+
     public function testGetKeyWithMissingKey(): void
     {
         $storage = $this->getStorage();
 
         $this->assertFalse($storage->get('missing_key'));
     }
+
     public function testGetKeyWithExistsKey(): void
     {
         $storage = $this->getStorage();
@@ -50,6 +53,7 @@ abstract class StorageTest extends TestCase
 
         $this->assertEquals($result, $want);
     }
+
     public function testSaveIfNotExistsWithNewKey(): void
     {
         $storage = $this->getStorage();
@@ -60,6 +64,7 @@ abstract class StorageTest extends TestCase
 
         $this->assertTrue($result);
     }
+
     public function testSaveIfNotExistsWithExistsKey(): void
     {
         $storage = $this->getStorage();
@@ -71,6 +76,7 @@ abstract class StorageTest extends TestCase
 
         $this->assertFalse($result);
     }
+
     public function testSaveCompareAndSwapWithNewKey(): void
     {
         $storage = $this->getStorage();
@@ -87,6 +93,7 @@ abstract class StorageTest extends TestCase
 
         $this->assertFalse($result);
     }
+
     public function testSaveCompareAndSwapWithExistsKeyAndOldValueDiffrent(): void
     {
         $storage = $this->getStorage();
@@ -107,6 +114,7 @@ abstract class StorageTest extends TestCase
 
         $this->assertFalse($result);
     }
+
     public function testSaveCompareAndSwapWithExistsKeyButOldValueSame(): void
     {
         $storage = $this->getStorage();

@@ -15,6 +15,7 @@ final class CounterTest extends BaseCounterTest
     {
         return new SimpleCacheStorage(new ArrayCache());
     }
+
     public function testConcurrentHitsWithDirtyReading(): void
     {
         $timer = new FrozenTimeTimer();
