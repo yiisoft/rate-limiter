@@ -50,4 +50,14 @@ class ApcuStorageTest extends StorageTest
         $this->expectException(InvalidArgumentException::class);
         $storage->saveCompareAndSwap('key', 1, 'new_string_value', parent::DEFAULT_TTL);
     }
+
+    public function testInvalidArgumentExceptionWithGet(): void
+    {
+        $storage = new ApcuStorage();
+
+        apcu_add('key', 'string_value', parent::DEFAULT_TTL);
+
+        $this->expectException(InvalidArgumentException::class);
+        $storage->get('key');
+    }
 }

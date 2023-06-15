@@ -26,7 +26,7 @@ final class ApcuStorage implements StorageInterface
     public function saveIfNotExists(string $key, mixed $value, int $ttl): bool
     {
         if ((!is_int($value)) && !is_float($value)) {
-            throw new InvalidArgumentException('The value must be int or float, is not supported by ApcuStorage');
+            throw new InvalidArgumentException('The value is not supported by ApcuStorage,it must be int or float');
         }
 
         $value = (int) ($value * $this->fixPrecisionRate);
@@ -37,11 +37,11 @@ final class ApcuStorage implements StorageInterface
     public function saveCompareAndSwap(string $key, mixed $oldValue, mixed $newValue, int $ttl): bool
     {
         if ((!is_int($oldValue)) && !is_float($oldValue)) {
-            throw new InvalidArgumentException('The oldValue must be int or float, is not supported by ApcuStorage');
+            throw new InvalidArgumentException('The oldValue is not supported by ApcuStorage,it must be int or float');
         }
 
         if ((!is_int($newValue)) && !is_float($newValue)) {
-            throw new InvalidArgumentException('The newValue must be int or float, is not supported by ApcuStorage');
+            throw new InvalidArgumentException('The newValue is not supported by ApcuStorage,it must be int or float');
         }
 
         $oldValue = (int) ($oldValue * $this->fixPrecisionRate);
@@ -53,7 +53,11 @@ final class ApcuStorage implements StorageInterface
     public function get(string $key): mixed
     {
         $value = apcu_fetch($key);
-        
+
+        if ((!is_int($value)) && !is_float($value) && !is_bool($value)) {
+            throw new InvalidArgumentException('The value is not supported by ApcuStorage,it must be bool, int or float');
+        }
+
         if ($value != false) {
             $value = floatval($value / $this->fixPrecisionRate);
         }
