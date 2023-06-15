@@ -59,7 +59,7 @@ final class ApcuStorage implements StorageInterface
         }
 
         if ($value != false) {
-            $value = floatval($value / $this->fixPrecisionRate);
+            $value = (float)$value / $this->fixPrecisionRate;
         }
         return $value;
     }
