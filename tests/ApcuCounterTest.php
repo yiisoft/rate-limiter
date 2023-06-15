@@ -69,8 +69,10 @@ final class ApcuCounterTest extends BaseCounterTest
             $timer,
             1
         );
+
         $counter->hit('key');
         $counter->hit('key');
+
         $this->expectException(OutOfMaxAttemptsException::class);
         $counter->hit('key');
     }

@@ -112,7 +112,7 @@ final class Counter implements CounterInterface
     }
 
     /**
-     * @return int Theoretical increment time that would be expected from equally spaced increments at exactly rate
+     * @return float Theoretical increment time that would be expected from equally spaced increments at exactly rate
      * limit. In GCRA it is known as TAT, theoretical arrival time.
      */
     private function calculateTheoreticalNextIncrementTime(
