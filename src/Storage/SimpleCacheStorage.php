@@ -17,7 +17,7 @@ final class SimpleCacheStorage implements StorageInterface
         return $this->cache->set($key, $value, $ttl);
     }
 
-    public function saveCompareAndSwap(string $key,mixed $oldValue, mixed $newValue, int $ttl): bool
+    public function saveCompareAndSwap(string $key, mixed $oldValue, mixed $newValue, int $ttl): bool
     {
         return $this->cache->set($key, $newValue, $ttl);
     }
