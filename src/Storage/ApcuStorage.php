@@ -9,7 +9,7 @@ use Yiisoft\Yii\RateLimiter\Exception\CannotUseException;
 
 final class ApcuStorage implements StorageInterface
 {
-    private const DEFAULT_FIX_PRECISION_RATE = 1000000;
+    private const DEFAULT_FIX_PRECISION_RATE = 1000;
 
     /**
      * @param int $fixPrecisionRate 
