@@ -29,6 +29,12 @@ final class ApcuCounterTest extends BaseCounterTest
         $this->clearStorage();
     }
 
+    /**
+     * 
+     * Testing that in concurrent scenarios, when dirty reads occur,
+     * the current limiter still performs as expected By 'ApcuStorage'.
+     * 
+     */
     public function testConcurrentHitsWithDirtyReading(): void
     {
         $timer = new FrozenTimeTimer();

@@ -16,6 +16,12 @@ final class CounterTest extends BaseCounterTest
         return new SimpleCacheStorage(new ArrayCache());
     }
 
+    /**
+     * 
+     * Testing that in concurrent scenarios, when dirty reads occur,
+     * the current limiter cannot be as expected By 'SimpleCacheStorage'.
+     * 
+     */
     public function testConcurrentHitsWithDirtyReading(): void
     {
         $timer = new FrozenTimeTimer();
