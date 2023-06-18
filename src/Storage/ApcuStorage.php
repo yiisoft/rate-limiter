@@ -19,7 +19,7 @@ final class ApcuStorage implements StorageInterface
         private int $fixPrecisionRate = self::DEFAULT_FIX_PRECISION_RATE
     ) {
         /**
-         * To use this application component, the [APCu PHP extension](http://www.php.net/apcu) must be loaded,
+         * To use this implementation class, the [APCu PHP extension](http://www.php.net/apcu) must be loaded,
          * And you should add "apc.enabled = 1" to your php.ini.
          * In order to enable APCu for CLI you should add "apc.enable_cli = 1" to your php.ini.
          */

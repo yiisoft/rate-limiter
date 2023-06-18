@@ -106,7 +106,7 @@ final class Counter implements CounterInterface
             } else {
                 break;
             }
-        } while(true);
+        } while (true);
 
         return new CounterState($this->limit, $remaining, $resetAfter);
     }
