@@ -94,7 +94,7 @@ Another way it to implement `Yiisoft\Yii\RateLimiter\Policy\LimitPolicyInterface
 
 There are two ready to use stores counters available in the package:
 - `\Yiisoft\Yii\RateLimiter\Storage\SimpleCacheStorage` - to stores counters in any [PSR-16](https://www.php-fig.org/psr/psr-16/) cache.
-- `\Yiisoft\Yii\RateLimiter\Storage\APcuStorage` - to store counters under concurrent security by using the [APCu PHP extension](http://www.php.net/apcu).
+- `\Yiisoft\Yii\RateLimiter\Storage\ApcuStorage` - to store counters under concurrent security by using the [APCu PHP extension](http://www.php.net/apcu).
 
 To have your own storage implement `Yiisoft\Yii\RateLimiter\Storage\StorageInterface`. 
 
