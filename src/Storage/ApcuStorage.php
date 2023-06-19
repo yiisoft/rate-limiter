@@ -13,7 +13,10 @@ final class ApcuStorage implements StorageInterface
 
     /**
      * @param int $fixPrecisionRate 
-     * floating point is not supported by apcu_cas of ACPu, so use it to improve precision.
+     * Apcu_cas of ACPu does not support float,  and yet supports int.
+     * APCu's stored value multiply by $fixPrecisionRate converts to int,
+     * AND the getter's value divide by $fixPrecisionRate converts to float.
+     * So use it to improve precision.
      */
     public function __construct(
         private int $fixPrecisionRate = self::DEFAULT_FIX_PRECISION_RATE
