@@ -11,8 +11,9 @@ interface StorageInterface
 {
     /**
      * Saves the value of key only if it was not already saved in the store.
-     * it returns false if a value was saved, Otherwise, it returns true and saves the value.
-     * the store supports expiring keys, the key will expire after the provided ttl.
+     * It returns `false` if a value was saved. Otherwise, it returns `true`
+     * and saves the value.
+     * If the storage supports expiring keys, the key will expire after the provided TTL.
      *
      * @param string $key The ID of the counter to store.
      * @param mixed $value The value of the counter.
@@ -23,9 +24,10 @@ interface StorageInterface
 
     /**
      * Compares the old value of key to the value which was saved in the store. 
-     * If it matches, it saves it to the new value and returns true. Otherwise, it returns false.
-     * If the key does not exist in the store, it returns false. 
-     * the store supports expiring keys, the key will expire after the provided ttl.
+     * If it matches, method saves it to the new value and returns `true`.
+     * Otherwise, it returns `false`.
+     * If the key does not exist in the storage, it returns `false`.
+     * If the storage supports expiring keys, the key will expire after the provided TTL.
      *
      * @param string $key The ID of the counter to store.
      * @param mixed $oldValue The old value of the counter.

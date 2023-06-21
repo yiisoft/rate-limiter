@@ -22,7 +22,7 @@ final class ApcuStorage implements StorageInterface
         private int $fixPrecisionRate = self::DEFAULT_FIX_PRECISION_RATE
     ) {
         /**
-         * To use this implementation class, the [APCu PHP extension](http://www.php.net/apcu) must be loaded,
+         * To use this storage, the [APCu PHP extension](http://www.php.net/apcu) must be loaded,
          * And you should add "apc.enabled = 1" to your php.ini.
          * In order to enable APCu for CLI you should add "apc.enable_cli = 1" to your php.ini.
          */
@@ -33,8 +33,8 @@ final class ApcuStorage implements StorageInterface
 
     public function saveIfNotExists(string $key, mixed $value, int $ttl): bool
     {
-        if ((!is_int($value)) && !is_float($value)) {
-            throw new InvalidArgumentException('The value is not supported by ApcuStorage,it must be int or float');
+        if (!is_int($value) && !is_float($value)) {
+            throw new InvalidArgumentException('The value is not supported by ApcuStorage, it must be int or float.');
         }
 
         $value = (int) ($value * $this->fixPrecisionRate);
@@ -44,12 +44,12 @@ final class ApcuStorage implements StorageInterface
 
     public function saveCompareAndSwap(string $key, mixed $oldValue, mixed $newValue, int $ttl): bool
     {
-        if ((!is_int($oldValue)) && !is_float($oldValue)) {
-            throw new InvalidArgumentException('The oldValue is not supported by ApcuStorage,it must be int or float');
+        if (!is_int($oldValue) && !is_float($oldValue)) {
+            throw new InvalidArgumentException('The oldValue is not supported by ApcuStorage, it must be int or float.');
         }
 
-        if ((!is_int($newValue)) && !is_float($newValue)) {
-            throw new InvalidArgumentException('The newValue is not supported by ApcuStorage,it must be int or float');
+        if (!is_int($newValue) && !is_float($newValue)) {
+            throw new InvalidArgumentException('The newValue is not supported by ApcuStorage, it must be int or float.');
         }
 
         $oldValue = (int) ($oldValue * $this->fixPrecisionRate);
@@ -62,8 +62,8 @@ final class ApcuStorage implements StorageInterface
     {
         $value = apcu_fetch($key);
 
-        if ((!is_int($value)) && !is_float($value) && !is_bool($value)) {
-            throw new InvalidArgumentException('The value is not supported by ApcuStorage,it must be bool, int or float');
+        if (!is_int($value) && !is_float($value) && !is_bool($value)) {
+            throw new InvalidArgumentException('The value is not supported by ApcuStorage, it must be bool, int or float.');
         }
 
         if ($value !== false) {
