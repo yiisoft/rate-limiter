@@ -7,6 +7,11 @@ namespace Yiisoft\Yii\RateLimiter\Storage;
 use InvalidArgumentException;
 use Yiisoft\Yii\RateLimiter\Exception\CannotUseException;
 
+/**
+ * To use this storage, the [APCu PHP extension](http://www.php.net/apcu) must be loaded,
+ * And you should add "apc.enabled = 1" to your php.ini.
+ * In order to enable APCu for CLI you should add "apc.enable_cli = 1" to your php.ini.
+ */
 final class ApcuStorage implements StorageInterface
 {
     private const DEFAULT_FIX_PRECISION_RATE = 1000;
@@ -21,11 +26,6 @@ final class ApcuStorage implements StorageInterface
     public function __construct(
         private int $fixPrecisionRate = self::DEFAULT_FIX_PRECISION_RATE
     ) {
-        /**
-         * To use this storage, the [APCu PHP extension](http://www.php.net/apcu) must be loaded,
-         * And you should add "apc.enabled = 1" to your php.ini.
-         * In order to enable APCu for CLI you should add "apc.enable_cli = 1" to your php.ini.
-         */
         if (!extension_loaded('apcu') || !ini_get('apc.enabled')) {
             throw new CannotUseException('APCu extension is not loaded or not enabled.');
         }
