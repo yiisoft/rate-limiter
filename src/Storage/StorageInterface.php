@@ -20,7 +20,7 @@ interface StorageInterface
      * @param integer $ttl The TTL value of this counter.
      * @return boolean
      */
-    public function saveIfNotExists(string $key, mixed $value, int $ttl): bool;
+    public function saveIfNotExists(string $key, float $value, int $ttl): bool;
 
     /**
      * Compares the old value of key to the value which was saved in the store. 
@@ -35,7 +35,7 @@ interface StorageInterface
      * @param integer $ttl The TTL value of this counter.
      * @return boolean
      */
-    public function saveCompareAndSwap(string $key, mixed $oldValue, mixed $newValue, int $ttl): bool;
+    public function saveCompareAndSwap(string $key, float $oldValue, float $newValue, int $ttl): bool;
 
     /**
      * Fetches a counter value from the storage.
@@ -44,5 +44,5 @@ interface StorageInterface
      *
      * @return mixed The value of the counter from the storage, or $default in case of no counter with such key present.
      */
-    public function get(string $key): mixed;
+    public function get(string $key): float;
 }

@@ -51,7 +51,7 @@ final class Counter implements CounterInterface
         private int $storageTtlInSeconds = self::DEFAULT_TTL,
         private string $storagePrefix = self::ID_PREFIX,
         TimerInterface|null $timer = null,
-        private int $maxCASAttempts = self::DEFAULT_MAX_CAS_ATTEMPTS
+        private int $maxCasAttempts = self::DEFAULT_MAX_CAS_ATTEMPTS
     ) {
         if ($limit < 1) {
             throw new InvalidArgumentException('The limit must be a positive value.');
@@ -98,7 +98,7 @@ final class Counter implements CounterInterface
                 if ($attempts >= $this->maxCASAttempts) {
                     throw new OutOfMaxAttemptsException(
                         sprintf(
-                            "Failed to store updated rate limit data for key %s after %d attempts",
+                            "Failed to store updated rate limit data for key "%s" after %d attempts",
                             $id, $this->maxCASAttempts
                         )
                     );
@@ -143,7 +143,7 @@ final class Counter implements CounterInterface
 
     private function storeTheoreticalNextIncrementTime(string $id, float $theoreticalNextIncrementTime, float $lastStoredTheoreticalNextIncrementTime): bool
     {
-        if ($lastStoredTheoreticalNextIncrementTime != 0) {
+        if ($lastStoredTheoreticalNextIncrementTime !== 0.0) {
             return $this->storage->saveCompareAndSwap(
                 $this->getStorageKey($id), 
                 $lastStoredTheoreticalNextIncrementTime, 

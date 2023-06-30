@@ -39,7 +39,7 @@ final class ApcuCounterTest extends BaseCounterTest
     {
         $timer = new FrozenTimeTimer();
         $storage = new FakeApcuStorage(5);
-        $limit_hits = 10;
+        $limitHits = 10;
         $counter = new Counter(
             $storage,
             $limit_hits,
