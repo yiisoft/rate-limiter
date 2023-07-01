@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Yii\RateLimiter;
 
 use InvalidArgumentException;
-use Yiisoft\Yii\RateLimiter\Exception\OutOfMaxAttemptsException;
 use Yiisoft\Yii\RateLimiter\Storage\StorageInterface;
 use Yiisoft\Yii\RateLimiter\Time\MicrotimeTimer;
 use Yiisoft\Yii\RateLimiter\Time\TimerInterface;

@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\RateLimiter\Tests;
 
-use Yiisoft\Yii\RateLimiter\Exception\CannotUseException;
 use Yiisoft\Yii\RateLimiter\Storage\StorageInterface;
 
 final class FakeApcuStorage implements StorageInterface
 {
-    private const DEFAULT_FIX_PRECISION_RATE = 1000000;
+    private const DEFAULT_FIX_PRECISION_RATE = 1000;
     private const DEFAULT_DIRTY_READ_COUNT = 8;
 
     private float $dirtyReadValue = 0;
@@ -18,9 +17,6 @@ final class FakeApcuStorage implements StorageInterface
         private int $dirtyReadCount = self::DEFAULT_DIRTY_READ_COUNT,
         private int $fixPrecisionRate = self::DEFAULT_FIX_PRECISION_RATE,
     ) {
-        if (!extension_loaded('apcu') || ini_get('apc.enabled') === '0') {
-            throw new CannotUseException('APCu extension is not loaded or not enabled.');
-        }
     }
 
     public function saveIfNotExists(string $key, int|float $value, int $ttl): bool

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Yii\RateLimiter\Tests;
 
 use Yiisoft\Yii\RateLimiter\Counter;
-use Yiisoft\Yii\RateLimiter\Exception\OutOfMaxAttemptsException;
 use Yiisoft\Yii\RateLimiter\Storage\ApcuStorage;
 use Yiisoft\Yii\RateLimiter\Storage\StorageInterface;
 use Yiisoft\Yii\RateLimiter\Tests\FakeApcuStorage;

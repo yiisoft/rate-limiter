@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Yii\RateLimiter\Storage;
 
 use InvalidArgumentException;
-use Yiisoft\Yii\RateLimiter\Exception\CannotUseException;
 
 /**
  * To use this storage, the [APCu PHP extension](http://www.php.net/apcu) must be loaded,
