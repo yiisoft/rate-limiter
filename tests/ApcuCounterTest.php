@@ -42,16 +42,16 @@ final class ApcuCounterTest extends BaseCounterTest
         $limitHits = 10;
         $counter = new Counter(
             $storage,
-            $limit_hits,
+            $limitHits,
             1,
             86400,
             'rate-limiter-',
             $timer
         );
 
-        $total_hits = 0;
+        $totalHits = 0;
         do {
-            ++$total_hits;
+            ++$totalHits;
 
             $statistics = $counter->hit('key');
 
@@ -61,17 +61,17 @@ final class ApcuCounterTest extends BaseCounterTest
             }
         } while(true);
 
-        $this->assertEquals($limit_hits, $total_hits);
+        $this->assertEquals($limitHits, $totalHits);
     }
 
     public function testOutOfMaxAttemptsException(): void
     {
         $timer = new FrozenTimeTimer();
         $storage = new FakeApcuStorage(2);
-        $limit_hits = 10;
+        $limitHits = 10;
         $counter = new Counter(
             $storage,
-            $limit_hits,
+            $limitHits,
             1,
             86400,
             'rate-limiter-',

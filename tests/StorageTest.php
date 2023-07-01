@@ -38,7 +38,7 @@ abstract class StorageTest extends TestCase
     {
         $storage = $this->getStorage();
 
-        $this->assertFalse($storage->get('missing_key'));
+        $this->assertNull($storage->get('missing_key'));
     }
 
     public function testGetKeyWithExistsKey(): void
@@ -81,13 +81,13 @@ abstract class StorageTest extends TestCase
     {
         $storage = $this->getStorage();
 
-        $new_value = (new FrozenTimeTimer())->nowInMilliseconds();
-        $old_value = (int) $storage->get('new_key');
+        $newValue = (new FrozenTimeTimer())->nowInMilliseconds();
+        $oldValue = (int) $storage->get('new_key');
 
         $result = $storage->saveCompareAndSwap(
             'new_key', 
-            $old_value, 
-            $new_value, 
+            $oldValue, 
+            $newValue, 
             self::DEFAULT_TTL
         );
 
@@ -98,17 +98,17 @@ abstract class StorageTest extends TestCase
     {
         $storage = $this->getStorage();
 
-        $old_value = (new FrozenTimeTimer())->nowInMilliseconds();
-        $storage->saveIfNotExists('exists_key', $old_value, self::DEFAULT_TTL);
+        $oldValue = (new FrozenTimeTimer())->nowInMilliseconds();
+        $storage->saveIfNotExists('exists_key', $oldValue, self::DEFAULT_TTL);
 
-        $old_value = $old_value + 200;
+        $oldValue = $oldValue + 200;
 
-        $new_value = $old_value + 100;
+        $newValue = $oldValue + 100;
 
         $result = $storage->saveCompareAndSwap(
             'exists_key', 
-            $old_value, 
-            $new_value, 
+            $oldValue, 
+            $newValue, 
             self::DEFAULT_TTL
         );
 
@@ -119,15 +119,15 @@ abstract class StorageTest extends TestCase
     {
         $storage = $this->getStorage();
 
-        $old_value = (new FrozenTimeTimer())->nowInMilliseconds();
-        $storage->saveIfNotExists('exists_key', $old_value, self::DEFAULT_TTL);
+        $oldValue = (new FrozenTimeTimer())->nowInMilliseconds();
+        $storage->saveIfNotExists('exists_key', $oldValue, self::DEFAULT_TTL);
 
-        $new_value = $old_value + 100;
+        $newValue = $oldValue + 100;
 
         $result = $storage->saveCompareAndSwap(
             'exists_key', 
-            $old_value, 
-            $new_value, 
+            $oldValue, 
+            $newValue, 
             self::DEFAULT_TTL
         );
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\RateLimiter\Storage;
 
+use InvalidArgumentException;
 use Psr\SimpleCache\CacheInterface;
 
 final class SimpleCacheStorage implements StorageInterface
@@ -22,8 +23,18 @@ final class SimpleCacheStorage implements StorageInterface
         return $this->cache->set($key, $newValue, $ttl);
     }
 
-    public function get(string $key): mixed
+    public function get(string $key): ?float
     {
-        return $this->cache->get($key);
+        $value = $this->cache->get($key);
+        if (!is_int($value) && !is_float($value) && $value !== false && $value !== null) {
+            throw new InvalidArgumentException('The value is not supported by SimpleCacheStorage, it must be int, float or null.');
+        }
+
+        if ($value === false || $value === null) {
+            $value = null;
+        } else {
+            $value = (float)$value;
+        }
+        return $value;
     }
 }

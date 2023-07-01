@@ -82,7 +82,7 @@ final class Counter implements CounterInterface
 
             $theoreticalNextIncrementTime = $this->calculateTheoreticalNextIncrementTime(
                 $lastIncrementTimeInMilliseconds,
-                $lastStoredTheoreticalNextIncrementTime
+                (float) $lastStoredTheoreticalNextIncrementTime
             );
 
             $remaining = $this->calculateRemaining($lastIncrementTimeInMilliseconds, $theoreticalNextIncrementTime);
@@ -95,11 +95,11 @@ final class Counter implements CounterInterface
                 }
 
                 $attempts++;
-                if ($attempts >= $this->maxCASAttempts) {
+                if ($attempts >= $this->maxCasAttempts) {
                     throw new OutOfMaxAttemptsException(
                         sprintf(
-                            "Failed to store updated rate limit data for key "%s" after %d attempts",
-                            $id, $this->maxCASAttempts
+                            'Failed to store updated rate limit data for key "%s" after %d attempts',
+                            $id, $this->maxCasAttempts
                         )
                     );
                 }
@@ -136,14 +136,14 @@ final class Counter implements CounterInterface
         );
     }
 
-    private function getLastStoredTheoreticalNextIncrementTime(string $id): float
+    private function getLastStoredTheoreticalNextIncrementTime(string $id): ?float
     {
-        return (float) $this->storage->get($this->getStorageKey($id));
+        return $this->storage->get($this->getStorageKey($id));
     }
 
-    private function storeTheoreticalNextIncrementTime(string $id, float $theoreticalNextIncrementTime, float $lastStoredTheoreticalNextIncrementTime): bool
+    private function storeTheoreticalNextIncrementTime(string $id, float $theoreticalNextIncrementTime, ?float $lastStoredTheoreticalNextIncrementTime): bool
     {
-        if ($lastStoredTheoreticalNextIncrementTime !== 0.0) {
+        if ($lastStoredTheoreticalNextIncrementTime !== null) {
             return $this->storage->saveCompareAndSwap(
                 $this->getStorageKey($id), 
                 $lastStoredTheoreticalNextIncrementTime, 

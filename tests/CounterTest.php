@@ -26,19 +26,19 @@ final class CounterTest extends BaseCounterTest
     {
         $timer = new FrozenTimeTimer();
         $storage = new FakeSimpleCacheStorage(new ArrayCache(), 5);
-        $limit_hits = 10;
+        $limitHits = 10;
         $counter = new Counter(
             $storage,
-            $limit_hits,
+            $limitHits,
             1,
             86400,
             'rate-limiter-',
             $timer
         );
 
-        $total_hits = 0;
+        $totalHits = 0;
         do {
-            ++$total_hits;
+            ++$totalHits;
 
             $statistics = $counter->hit('key');
 
@@ -48,6 +48,6 @@ final class CounterTest extends BaseCounterTest
             }
         } while(true);
 
-        $this->assertGreaterThan($limit_hits, $total_hits);
+        $this->assertGreaterThan($limitHits, $totalHits);
     }
 }
