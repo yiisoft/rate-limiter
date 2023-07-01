@@ -26,9 +26,6 @@ final class ApcuStorage implements StorageInterface
     public function __construct(
         private int $fixPrecisionRate = self::DEFAULT_FIX_PRECISION_RATE
     ) {
-        if (!extension_loaded('apcu') || !ini_get('apc.enabled')) {
-            throw new CannotUseException('APCu extension is not loaded or not enabled.');
-        }
     }
 
     public function saveIfNotExists(string $key, int|float $value, int $ttl): bool

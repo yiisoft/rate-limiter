@@ -64,14 +64,14 @@ final class ApcuCounterTest extends BaseCounterTest
         $this->assertEquals($limitHits, $totalHits);
     }
 
-    public function testOutOfMaxAttemptsException(): void
+    public function testIsExceedingMaxAttempts(): void
     {
         $timer = new FrozenTimeTimer();
-        $storage = new FakeApcuStorage(2);
-        $limitHits = 10;
+        $dirtyReadCount = 2;
+        $storage = new FakeApcuStorage($dirtyReadCount);
         $counter = new Counter(
             $storage,
-            $limitHits,
+            10,
             1,
             86400,
             'rate-limiter-',
@@ -82,7 +82,7 @@ final class ApcuCounterTest extends BaseCounterTest
         $counter->hit('key');
         $counter->hit('key');
 
-        $this->expectException(OutOfMaxAttemptsException::class);
-        $counter->hit('key');
+        $counterState = $counter->hit('key');
+        $this->assertTrue($counterState->isExceedingMaxAttempts());
     }
 }

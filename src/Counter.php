@@ -72,7 +72,8 @@ final class Counter implements CounterInterface
      */
     public function hit(string $id): CounterState
     {
-        $attempts = 0; 
+        $attempts = 0;
+        $isExceedingMaxAttempts = false;
         do {
             // Last increment time.
             // In GCRA it's known as arrival time.
@@ -96,19 +97,15 @@ final class Counter implements CounterInterface
 
                 $attempts++;
                 if ($attempts >= $this->maxCasAttempts) {
-                    throw new OutOfMaxAttemptsException(
-                        sprintf(
-                            'Failed to store updated rate limit data for key "%s" after %d attempts',
-                            $id, $this->maxCasAttempts
-                        )
-                    );
+                    $isExceedingMaxAttempts = true;
+                    break;
                 }
             } else {
                 break;
             }
         } while (true);
 
-        return new CounterState($this->limit, $remaining, $resetAfter);
+        return new CounterState($this->limit, $remaining, $resetAfter, $isExceedingMaxAttempts);
     }
 
     /**

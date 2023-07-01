@@ -20,11 +20,15 @@ final class ApcuStorageTest extends StorageTest
     {
         return apcu_clear_cache();
     }
-
-    public function testCannotUseExceptionWithAPCuNotEnabled(): void
+    public static function setUpBeforeClass(): void
     {
-        $this->expectException(CannotUseException::class);
-        throw new CannotUseException;
+        if (!extension_loaded('apcu')) {
+            self::markTestSkipped('Required extension "apcu" is not loaded');
+        }
+
+        if (!ini_get('apc.enable_cli')) {
+            self::markTestSkipped('APC is installed but not enabled. Enable with "apc.enable_cli=1" from php.ini. Skipping.');
+        }
     }
 
     public function testInvalidArgumentExceptionWithGet(): void

@@ -217,6 +217,43 @@ final class MiddlewareTest extends TestCase
         }
     }
 
+    /**
+     * 
+     * Testing fail to store updated the rate limit data after maximum attempts.
+     * 
+     */
+    public function testWithExceedingMaxAttempts(): void
+    {
+        $timer = new FrozenTimeTimer();
+        $dirtyReadCount = 2;
+        $storage = new FakeApcuStorage($dirtyReadCount);
+        $counter = new Counter(
+            $storage,
+            10,
+            1,
+            86400,
+            'rate-limiter-',
+            $timer,
+            1
+        );
+        $middleware = $this->createRateLimiter($counter, new LimitAlways());
+        $middleware->process(
+            $this->createRequest(Method::GET, '/', ['REMOTE_ADDR' => '193.186.62.12']),
+            $this->createRequestHandler()
+        );
+        $middleware->process(
+            $this->createRequest(Method::GET, '/', ['REMOTE_ADDR' => '193.186.62.12']),
+            $this->createRequestHandler()
+        );
+
+        $response = $middleware->process(
+            $this->createRequest(Method::GET, '/', ['REMOTE_ADDR' => '193.186.62.12']),
+            $this->createRequestHandler()
+        );
+
+        $this->assertEquals(Status::CONFLICT, $response->getStatusCode());
+    }
+
     private function createRequestHandler(): RequestHandlerInterface
     {
         $requestHandler = $this->createMock(RequestHandlerInterface::class);

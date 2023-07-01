@@ -13,9 +13,14 @@ final class CounterState
      * @param int $limit The maximum number of requests allowed with a time period.
      * @param int $remaining The number of remaining requests in the current time period.
      * @param int $resetTime Timestamp to wait until the rate limit resets.
+     * @param bool $isExceedingMaxAttempts If fail to store updated the rate limit data after maximum attempts.
      */
-    public function __construct(private int $limit, private int $remaining, private int $resetTime)
-    {
+    public function __construct(
+        private int $limit, 
+        private int $remaining, 
+        private int $resetTime,
+        private bool $isExceedingMaxAttempts = false
+    ) {
     }
 
     /**
@@ -48,5 +53,13 @@ final class CounterState
     public function isLimitReached(): bool
     {
         return $this->remaining === 0;
+    }
+
+    /**
+     * @return bool If fail to store updated the rate limit data after maximum attempts.
+     */
+    public function isExceedingMaxAttempts(): bool
+    {
+        return $this->isExceedingMaxAttempts;
     }
 }

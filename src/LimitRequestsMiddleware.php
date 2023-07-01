@@ -40,6 +40,8 @@ final class LimitRequestsMiddleware implements MiddlewareInterface
 
         if ($state->isLimitReached()) {
             $response = $this->createErrorResponse();
+        } elseif ($state->isExceedingMaxAttempts()) {
+            $response = $this->createErrorResponse(Status::CONFLICT);
         } else {
             $response = $handler->handle($request);
         }
@@ -47,10 +49,10 @@ final class LimitRequestsMiddleware implements MiddlewareInterface
         return $this->addHeaders($response, $state);
     }
 
-    private function createErrorResponse(): ResponseInterface
+    private function createErrorResponse(int $statusCode = Status::TOO_MANY_REQUESTS): ResponseInterface
     {
-        $response = $this->responseFactory->createResponse(Status::TOO_MANY_REQUESTS);
-        $response->getBody()->write(Status::TEXTS[Status::TOO_MANY_REQUESTS]);
+        $response = $this->responseFactory->createResponse($statusCode);
+        $response->getBody()->write(Status::TEXTS[$statusCode]);
 
         return $response;
     }

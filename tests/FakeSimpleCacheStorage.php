@@ -32,13 +32,14 @@ final class FakeSimpleCacheStorage implements StorageInterface
     public function get(string $key): ?float
     {
         // Simulate dirty reading scenarios in this SimpleCacheStorage class
-        if ($this->remainingDirtyReadCount > 0 && $this->dirtyReadValue != null) {
+        if ($this->remainingDirtyReadCount > 0 && $this->dirtyReadValue !== null) {
             $this->remainingDirtyReadCount--;
             return $this->dirtyReadValue;
         }
 
         $readValue = $this->cache->get($key);
         if ($readValue) {
+            $readValue = (float)$readValue;
             $this->dirtyReadValue = $readValue;
             $this->remainingDirtyReadCount = $this->dirtyReadCount;
         } else {
