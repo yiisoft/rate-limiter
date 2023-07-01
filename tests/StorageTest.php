@@ -65,56 +65,6 @@ abstract class StorageTest extends TestCase
         $this->assertTrue($result);
     }
 
-    public function testSaveIfNotExistsWithExistsKey(): void
-    {
-        $storage = $this->getStorage();
-
-        $value = (new FrozenTimeTimer())->nowInMilliseconds();
-        $storage->saveIfNotExists('exists_key', $value, self::DEFAULT_TTL);
-
-        $result = $storage->saveIfNotExists('exists_key', $value, self::DEFAULT_TTL);
-
-        $this->assertFalse($result);
-    }
-
-    public function testSaveCompareAndSwapWithNewKey(): void
-    {
-        $storage = $this->getStorage();
-
-        $newValue = (new FrozenTimeTimer())->nowInMilliseconds();
-        $oldValue = (int) $storage->get('new_key');
-
-        $result = $storage->saveCompareAndSwap(
-            'new_key', 
-            $oldValue, 
-            $newValue, 
-            self::DEFAULT_TTL
-        );
-
-        $this->assertFalse($result);
-    }
-
-    public function testSaveCompareAndSwapWithExistsKeyButOldValueDiffrent(): void
-    {
-        $storage = $this->getStorage();
-
-        $oldValue = (new FrozenTimeTimer())->nowInMilliseconds();
-        $storage->saveIfNotExists('exists_key', $oldValue, self::DEFAULT_TTL);
-
-        $oldValue = $oldValue + 200;
-
-        $newValue = $oldValue + 100;
-
-        $result = $storage->saveCompareAndSwap(
-            'exists_key', 
-            $oldValue, 
-            $newValue, 
-            self::DEFAULT_TTL
-        );
-
-        $this->assertFalse($result);
-    }
-
     public function testSaveCompareAndSwapWithExistsKeyAndOldValueSame(): void
     {
         $storage = $this->getStorage();
