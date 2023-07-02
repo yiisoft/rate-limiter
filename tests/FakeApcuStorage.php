@@ -11,7 +11,7 @@ final class FakeApcuStorage implements StorageInterface
     private const DEFAULT_FIX_PRECISION_RATE = 1000;
     private const DEFAULT_DIRTY_READ_COUNT = 8;
 
-    private float $dirtyReadValue = 0;
+    private ?float $dirtyReadValue = null;
     private int $remainingDirtyReadCount = 0;
     public function __construct(
         private int $dirtyReadCount = self::DEFAULT_DIRTY_READ_COUNT,
