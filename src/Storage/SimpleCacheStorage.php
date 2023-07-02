@@ -30,11 +30,7 @@ final class SimpleCacheStorage implements StorageInterface
             throw new InvalidArgumentException('The value is not supported by SimpleCacheStorage, it must be int, float or null.');
         }
 
-        if ($value === false || $value === null) {
-            $value = null;
-        } else {
-            $value = (float)$value;
-        }
+        $value = ($value === false || $value === null) ? null : (float)$value;
         return $value;
     }
 }

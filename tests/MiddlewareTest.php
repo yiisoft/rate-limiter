@@ -21,6 +21,9 @@ use Yiisoft\Yii\RateLimiter\Policy\LimitPerIp;
 use Yiisoft\Yii\RateLimiter\Policy\LimitPolicyInterface;
 use Yiisoft\Yii\RateLimiter\LimitRequestsMiddleware;
 use Yiisoft\Yii\RateLimiter\Storage\SimpleCacheStorage;
+use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FakeApcuStorage;
+use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FakeCounter;
+use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FrozenTimeTimer;
 
 final class MiddlewareTest extends TestCase
 {

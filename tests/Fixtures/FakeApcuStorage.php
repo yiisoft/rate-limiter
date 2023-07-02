@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\RateLimiter\Tests;
+namespace Yiisoft\Yii\RateLimiter\Tests\Fixtures;
 
 use Yiisoft\Yii\RateLimiter\Storage\StorageInterface;
 

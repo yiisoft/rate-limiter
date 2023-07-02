@@ -8,6 +8,7 @@ use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Yii\RateLimiter\Counter;
 use Yiisoft\Yii\RateLimiter\Storage\StorageInterface;
+use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FrozenTimeTimer;
 use Yiisoft\Yii\RateLimiter\Time\MicrotimeTimer;
 use Yiisoft\Yii\RateLimiter\Tests\Support\Assert;
 

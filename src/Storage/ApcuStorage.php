@@ -49,11 +49,7 @@ final class ApcuStorage implements StorageInterface
             throw new InvalidArgumentException('The value is not supported by ApcuStorage, it must be int, float.');
         }
 
-        if ($value !== false) {
-            $value = (float)$value / $this->fixPrecisionRate;
-        } else {
-            $value = null;
-        }
+        $value = ($value !== false) ? (float)$value / $this->fixPrecisionRate : null;
         return $value;
     }
 }

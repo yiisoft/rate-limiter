@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\RateLimiter\Tests;
+namespace Yiisoft\Yii\RateLimiter\Tests\Storage;
 
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Yii\RateLimiter\Storage\StorageInterface;
-use Yiisoft\Yii\RateLimiter\Tests\FrozenTimeTimer;
+use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FrozenTimeTimer;
 
 abstract class StorageTest extends TestCase
 {

@@ -7,7 +7,8 @@ namespace Yiisoft\Yii\RateLimiter\Tests;
 use Yiisoft\Yii\RateLimiter\Counter;
 use Yiisoft\Yii\RateLimiter\Storage\ApcuStorage;
 use Yiisoft\Yii\RateLimiter\Storage\StorageInterface;
-use Yiisoft\Yii\RateLimiter\Tests\FakeApcuStorage;
+use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FakeApcuStorage;
+use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FrozenTimeTimer;
 
 final class ApcuCounterTest extends BaseCounterTest
 {

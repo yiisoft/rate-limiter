@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\RateLimiter\Tests;
 
+use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Yii\RateLimiter\Counter;
 use Yiisoft\Yii\RateLimiter\Storage\SimpleCacheStorage;
 use Yiisoft\Yii\RateLimiter\Storage\StorageInterface;
-use Yiisoft\Cache\ArrayCache;
+use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FakeSimpleCacheStorage;
+use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FrozenTimeTimer;
 
 final class CounterTest extends BaseCounterTest
 {
