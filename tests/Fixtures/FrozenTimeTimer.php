@@ -13,14 +13,14 @@ final class FrozenTimeTimer implements TimerInterface
 {
     private const MILLISECONDS_PER_SECOND = 1000;
 
-    private static ?int $mark = null;
+    private static ?float $mark = null;
 
     /**
      * Set time.
      *
-     * @param int $mark Time in milliseconds.
+     * @param float $mark Time in milliseconds.
      */
-    public static function setTimeMark(int $mark): void
+    public static function setTimeMark(float $mark): void
     {
         self::$mark = $mark;
     }
@@ -28,10 +28,10 @@ final class FrozenTimeTimer implements TimerInterface
     /**
      * Get current time.
      *
-     * @return int Current time in milliseconds.
+     * @return float Current time in milliseconds.
      */
-    public function nowInMilliseconds(): int
+    public function nowInMilliseconds(): float
     {
-        return self::$mark ?? (int)round(microtime(true) * self::MILLISECONDS_PER_SECOND);
+        return self::$mark ?? round(microtime(true) * self::MILLISECONDS_PER_SECOND);
     }
 }

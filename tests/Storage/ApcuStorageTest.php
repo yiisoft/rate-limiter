@@ -51,9 +51,9 @@ final class ApcuStorageTest extends StorageTest
         $oldValue = (int) $storage->get('new_key');
 
         $result = $storage->saveCompareAndSwap(
-            'new_key', 
-            $oldValue, 
-            $newValue, 
+            'new_key',
+            $oldValue,
+            $newValue,
             self::DEFAULT_TTL
         );
 
@@ -72,9 +72,9 @@ final class ApcuStorageTest extends StorageTest
         $newValue = $oldValue + 100;
 
         $result = $storage->saveCompareAndSwap(
-            'exists_key', 
-            $oldValue, 
-            $newValue, 
+            'exists_key',
+            $oldValue,
+            $newValue,
             self::DEFAULT_TTL
         );
 

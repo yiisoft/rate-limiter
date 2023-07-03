@@ -40,8 +40,6 @@ final class LimitRequestsMiddleware implements MiddlewareInterface
 
         if ($state->isLimitReached()) {
             $response = $this->createErrorResponse();
-        } elseif ($state->isExceedingMaxAttempts()) {
-            $response = $this->createErrorResponse(Status::CONFLICT);
         } else {
             $response = $handler->handle($request);
         }

@@ -19,13 +19,13 @@ final class FakeApcuStorage implements StorageInterface
     ) {
     }
 
-    public function saveIfNotExists(string $key, int|float $value, int $ttl): bool
+    public function saveIfNotExists(string $key, float $value, int $ttl): bool
     {
         $value = (int) ($value * $this->fixPrecisionRate);
         return (bool)apcu_add($key, $value, $ttl);
     }
 
-    public function saveCompareAndSwap(string $key, int|float $oldValue, int|float $newValue, int $ttl): bool
+    public function saveCompareAndSwap(string $key, float $oldValue, float $newValue, int $ttl): bool
     {
         $oldValue = (int) ($oldValue * $this->fixPrecisionRate);
         $newValue = (int) ($newValue * $this->fixPrecisionRate);

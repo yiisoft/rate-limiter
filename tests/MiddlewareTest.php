@@ -254,7 +254,7 @@ final class MiddlewareTest extends TestCase
             $this->createRequestHandler()
         );
 
-        $this->assertEquals(Status::CONFLICT, $response->getStatusCode());
+        $this->assertEquals(Status::OK, $response->getStatusCode());
     }
 
     private function createRequestHandler(): RequestHandlerInterface

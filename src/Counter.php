@@ -41,7 +41,7 @@ final class Counter implements CounterInterface
      * @param int $storageTtlInSeconds Storage TTL. Should be higher than `$periodInSeconds`.
      * @param string $storagePrefix Storage prefix.
      * @param TimerInterface|null $timer Timer instance to get current time from.
-     * @param int $maxCASAttempts Maximum number of times to retry saveIfNotExists/saveCompareAndSwap operations before returning an error.
+     * @param int $maxCasAttempts Maximum number of times to retry saveIfNotExists/saveCompareAndSwap operations before returning an error.
      */
     public function __construct(
         private StorageInterface $storage,
