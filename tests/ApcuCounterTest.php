@@ -30,10 +30,10 @@ final class ApcuCounterTest extends BaseCounterTest
     }
 
     /**
-     * 
+     *
      * Testing that in concurrent scenarios, when dirty reads occur,
      * the current limiter still performs as expected By 'ApcuStorage'.
-     * 
+     *
      */
     public function testConcurrentHitsWithDirtyReading(): void
     {
@@ -83,6 +83,6 @@ final class ApcuCounterTest extends BaseCounterTest
         $counter->hit('key');
 
         $counterState = $counter->hit('key');
-        $this->assertTrue($counterState->isExceedingMaxAttempts());
+        $this->assertTrue($counterState->isFailStoreUpdatedData());
     }
 }

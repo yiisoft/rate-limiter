@@ -46,11 +46,11 @@ final class Counter implements CounterInterface
     public function __construct(
         private StorageInterface $storage,
         private int $limit,
-        private int $periodInSeconds,
+        int $periodInSeconds,
         private int $storageTtlInSeconds = self::DEFAULT_TTL,
         private string $storagePrefix = self::ID_PREFIX,
         TimerInterface|null $timer = null,
-        private int $maxCasAttempts = self::DEFAULT_MAX_CAS_ATTEMPTS
+        private int $maxCasAttempts = self::DEFAULT_MAX_CAS_ATTEMPTS,
     ) {
         if ($limit < 1) {
             throw new InvalidArgumentException('The limit must be a positive value.');
@@ -60,7 +60,6 @@ final class Counter implements CounterInterface
             throw new InvalidArgumentException('The period must be a positive value.');
         }
 
-        $this->limit = $limit;
         $this->periodInMilliseconds = $periodInSeconds * self::MILLISECONDS_PER_SECOND;
         $this->timer = $timer ?: new MicrotimeTimer();
         $this->incrementIntervalInMilliseconds = $this->periodInMilliseconds / $this->limit;
@@ -72,7 +71,7 @@ final class Counter implements CounterInterface
     public function hit(string $id): CounterState
     {
         $attempts = 0;
-        $isExceedingMaxAttempts = false;
+        $isFailStoreUpdatedData = false;
         do {
             // Last increment time.
             // In GCRA it's known as arrival time.
@@ -82,21 +81,25 @@ final class Counter implements CounterInterface
 
             $theoreticalNextIncrementTime = $this->calculateTheoreticalNextIncrementTime(
                 $lastIncrementTimeInMilliseconds,
-                (float) $lastStoredTheoreticalNextIncrementTime
+                $lastStoredTheoreticalNextIncrementTime
             );
 
             $remaining = $this->calculateRemaining($lastIncrementTimeInMilliseconds, $theoreticalNextIncrementTime);
             $resetAfter = $this->calculateResetAfter($theoreticalNextIncrementTime);
 
             if ($remaining >= 1) {
-                $isStored = $this->storeTheoreticalNextIncrementTime($id, $theoreticalNextIncrementTime, $lastStoredTheoreticalNextIncrementTime);
+                $isStored = $this->storeTheoreticalNextIncrementTime(
+                    $id,
+                    $theoreticalNextIncrementTime,
+                    $lastStoredTheoreticalNextIncrementTime
+                );
                 if ($isStored) {
                     break;
                 }
 
                 $attempts++;
                 if ($attempts >= $this->maxCasAttempts) {
-                    $isExceedingMaxAttempts = true;
+                    $isFailStoreUpdatedData = true;
                     break;
                 }
             } else {
@@ -104,7 +107,7 @@ final class Counter implements CounterInterface
             }
         } while (true);
 
-        return new CounterState($this->limit, $remaining, $resetAfter, $isExceedingMaxAttempts);
+        return new CounterState($this->limit, $remaining, $resetAfter, $isFailStoreUpdatedData);
     }
 
     /**
@@ -113,17 +116,22 @@ final class Counter implements CounterInterface
      */
     private function calculateTheoreticalNextIncrementTime(
         float $lastIncrementTimeInMilliseconds,
-        float $storedTheoreticalNextIncrementTime
+        ?float $storedTheoreticalNextIncrementTime
     ): float {
-        return max($lastIncrementTimeInMilliseconds, $storedTheoreticalNextIncrementTime) +
-            $this->incrementIntervalInMilliseconds;
+        return (
+            $storedTheoreticalNextIncrementTime === null
+                ? $lastIncrementTimeInMilliseconds
+                : max($lastIncrementTimeInMilliseconds, $storedTheoreticalNextIncrementTime)
+            ) + $this->incrementIntervalInMilliseconds;
     }
 
     /**
      * @return int The number of remaining requests in the current time period.
      */
-    private function calculateRemaining(float $lastIncrementTimeInMilliseconds, float $theoreticalNextIncrementTime): int
-    {
+    private function calculateRemaining(
+        float $lastIncrementTimeInMilliseconds,
+        float $theoreticalNextIncrementTime
+    ): int {
         $incrementAllowedAt = $theoreticalNextIncrementTime - $this->periodInMilliseconds;
 
         return (int) (
@@ -137,20 +145,23 @@ final class Counter implements CounterInterface
         return $this->storage->get($this->getStorageKey($id));
     }
 
-    private function storeTheoreticalNextIncrementTime(string $id, float $theoreticalNextIncrementTime, ?float $lastStoredTheoreticalNextIncrementTime): bool
-    {
+    private function storeTheoreticalNextIncrementTime(
+        string $id,
+        float $theoreticalNextIncrementTime,
+        ?float $lastStoredTheoreticalNextIncrementTime
+    ): bool {
         if ($lastStoredTheoreticalNextIncrementTime !== null) {
             return $this->storage->saveCompareAndSwap(
-                $this->getStorageKey($id), 
-                $lastStoredTheoreticalNextIncrementTime, 
-                $theoreticalNextIncrementTime, 
+                $this->getStorageKey($id),
+                $lastStoredTheoreticalNextIncrementTime,
+                $theoreticalNextIncrementTime,
                 $this->storageTtlInSeconds
             );
         }
-        
+
         return $this->storage->saveIfNotExists(
-            $this->getStorageKey($id), 
-            $theoreticalNextIncrementTime, 
+            $this->getStorageKey($id),
+            $theoreticalNextIncrementTime,
             $this->storageTtlInSeconds
         );
     }

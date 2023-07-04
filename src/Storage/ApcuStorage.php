@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\RateLimiter\Storage;
 
-use InvalidArgumentException;
+use function is_float;
+use function is_int;
 
 /**
  * To use this storage, the [APCu PHP extension](http://www.php.net/apcu) must be loaded,
@@ -16,7 +17,7 @@ final class ApcuStorage implements StorageInterface
     private const DEFAULT_FIX_PRECISION_RATE = 1000;
 
     /**
-     * @param int $fixPrecisionRate 
+     * @param int $fixPrecisionRate
      * Apcu_cas of ACPu does not support float,  and yet supports int.
      * APCu's stored value multiply by $fixPrecisionRate converts to int,
      * AND the getter's value divide by $fixPrecisionRate converts to float.
@@ -29,27 +30,25 @@ final class ApcuStorage implements StorageInterface
 
     public function saveIfNotExists(string $key, float $value, int $ttl): bool
     {
-        $value = (int) ($value * $this->fixPrecisionRate);
+        $value *= $this->fixPrecisionRate;
 
-        return apcu_add($key, $value, $ttl);
+        return apcu_add($key, (int) $value, $ttl);
     }
 
     public function saveCompareAndSwap(string $key, float $oldValue, float $newValue, int $ttl): bool
     {
-        $oldValue = (int) ($oldValue * $this->fixPrecisionRate);
-        $newValue = (int) ($newValue * $this->fixPrecisionRate);
+        $oldValue *= $this->fixPrecisionRate;
+        $newValue *= $this->fixPrecisionRate;
 
-        return apcu_cas($key, $oldValue, $newValue);
+        return apcu_cas($key, (int) $oldValue, (int) $newValue);
     }
 
     public function get(string $key): ?float
     {
         $value = apcu_fetch($key);
-        if (!is_int($value) && !is_float($value) && $value !== false) {
-            throw new InvalidArgumentException('The value is not supported by ApcuStorage, it must be int, float.');
-        }
 
-        $value = ($value !== false) ? (float)$value / $this->fixPrecisionRate : null;
-        return $value;
+        return (is_int($value) || is_float($value))
+            ? (float) $value / $this->fixPrecisionRate
+            : null;
     }
 }

@@ -29,7 +29,8 @@ final class LimitRequestsMiddleware implements MiddlewareInterface
     public function __construct(
         private CounterInterface $counter,
         private ResponseFactoryInterface $responseFactory,
-        LimitPolicyInterface|null $limitingPolicy = null
+        LimitPolicyInterface|null $limitingPolicy = null,
+        private ?MiddlewareInterface $failStoreUpdatedDataMiddleware = null,
     ) {
         $this->limitingPolicy = $limitingPolicy ?: new LimitPerIp();
     }
@@ -40,6 +41,8 @@ final class LimitRequestsMiddleware implements MiddlewareInterface
 
         if ($state->isLimitReached()) {
             $response = $this->createErrorResponse();
+        } elseif ($state->isFailStoreUpdatedData() && $this->failStoreUpdatedDataMiddleware !== null) {
+            $response = $this->failStoreUpdatedDataMiddleware->process($request, $handler);
         } else {
             $response = $handler->handle($request);
         }
@@ -58,8 +61,8 @@ final class LimitRequestsMiddleware implements MiddlewareInterface
     private function addHeaders(ResponseInterface $response, CounterState $result): ResponseInterface
     {
         return $response
-            ->withHeader('X-Rate-Limit-Limit', (string)$result->getLimit())
-            ->withHeader('X-Rate-Limit-Remaining', (string)$result->getRemaining())
-            ->withHeader('X-Rate-Limit-Reset', (string)$result->getResetTime());
+            ->withHeader('X-Rate-Limit-Limit', (string) $result->getLimit())
+            ->withHeader('X-Rate-Limit-Remaining', (string) $result->getRemaining())
+            ->withHeader('X-Rate-Limit-Reset', (string) $result->getResetTime());
     }
 }

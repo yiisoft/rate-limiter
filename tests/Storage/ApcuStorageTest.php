@@ -81,13 +81,13 @@ final class ApcuStorageTest extends StorageTest
         $this->assertFalse($result);
     }
 
-    public function testInvalidArgumentExceptionWithGet(): void
+    public function testStringValueInCache(): void
     {
         apcu_add('key', 'string_value', parent::DEFAULT_TTL);
-
-        $this->expectException(InvalidArgumentException::class);
-
         $storage = $this->getStorage();
-        $storage->get('key');
+
+        $value = $storage->get('key');
+
+        $this->assertNull($value);
     }
 }
