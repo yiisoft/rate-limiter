@@ -30,10 +30,8 @@ final class ApcuCounterTest extends BaseCounterTest
     }
 
     /**
-     *
      * Testing that in concurrent scenarios, when dirty reads occur,
      * the current limiter still performs as expected By 'ApcuStorage'.
-     *
      */
     public function testConcurrentHitsWithDirtyReading(): void
     {
@@ -59,7 +57,7 @@ final class ApcuCounterTest extends BaseCounterTest
             if ($remaining <= 0) {
                 break;
             }
-        } while(true);
+        } while (true);
 
         $this->assertEquals($limitHits, $totalHits);
     }

@@ -13,6 +13,7 @@ final class FakeApcuStorage implements StorageInterface
 
     private ?float $dirtyReadValue = null;
     private int $remainingDirtyReadCount = 0;
+
     public function __construct(
         private int $dirtyReadCount = self::DEFAULT_DIRTY_READ_COUNT,
         private int $fixPrecisionRate = self::DEFAULT_FIX_PRECISION_RATE,
@@ -42,7 +43,7 @@ final class FakeApcuStorage implements StorageInterface
 
         $readValue = apcu_fetch($key);
         if ($readValue) {
-            $readValue = floatval($readValue / $this->fixPrecisionRate);
+            $readValue = (float) ($readValue / $this->fixPrecisionRate);
             $this->dirtyReadValue = $readValue;
             $this->remainingDirtyReadCount = $this->dirtyReadCount;
         } else {

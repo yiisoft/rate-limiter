@@ -223,9 +223,7 @@ final class MiddlewareTest extends TestCase
     }
 
     /**
-     *
      * Testing fail to store updated the rate limit data after maximum attempts.
-     *
      */
     public function testWithExceedingMaxAttempts(): void
     {

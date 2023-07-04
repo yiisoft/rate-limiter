@@ -13,6 +13,7 @@ final class FakeSimpleCacheStorage implements StorageInterface
 
     private ?float $dirtyReadValue = null;
     private int $remainingDirtyReadCount = 0;
+
     public function __construct(
         private CacheInterface $cache,
         private int $dirtyReadCount = self::DEFAULT_DIRTY_READ_COUNT,

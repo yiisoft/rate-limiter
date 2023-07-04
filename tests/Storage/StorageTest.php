@@ -14,9 +14,9 @@ abstract class StorageTest extends TestCase
 
     protected const DEFAULT_TTL = 86400;
 
-    protected abstract function createStorage(): StorageInterface;
+    abstract protected function createStorage(): StorageInterface;
 
-    protected abstract function clearStorage(): bool;
+    abstract protected function clearStorage(): bool;
 
     protected function getStorage(): StorageInterface
     {
@@ -75,9 +75,9 @@ abstract class StorageTest extends TestCase
         $newValue = $oldValue + 100;
 
         $result = $storage->saveCompareAndSwap(
-            'exists_key', 
-            $oldValue, 
-            $newValue, 
+            'exists_key',
+            $oldValue,
+            $newValue,
             self::DEFAULT_TTL
         );
 

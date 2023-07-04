@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\RateLimiter\Tests\Storage;
 
-use InvalidArgumentException;
 use Yiisoft\Yii\RateLimiter\Storage\ApcuStorage;
 use Yiisoft\Yii\RateLimiter\Storage\StorageInterface;
 use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FrozenTimeTimer;
@@ -20,6 +19,7 @@ final class ApcuStorageTest extends StorageTest
     {
         return apcu_clear_cache();
     }
+
     public static function setUpBeforeClass(): void
     {
         if (!extension_loaded('apcu')) {

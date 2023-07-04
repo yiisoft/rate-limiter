@@ -16,7 +16,7 @@ abstract class BaseCounterTest extends TestCase
 {
     protected StorageInterface $storage;
 
-    protected abstract function createStorage(): StorageInterface;
+    abstract protected function createStorage(): StorageInterface;
 
     protected function getStorage(): StorageInterface
     {

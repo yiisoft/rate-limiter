@@ -17,13 +17,13 @@ interface StorageInterface
      *
      * @param string $key The ID of the counter to store.
      * @param float $value The value of the counter.
-     * @param integer $ttl The TTL value of this counter.
-     * @return boolean
+     * @param int $ttl The TTL value of this counter.
+     * @return bool
      */
     public function saveIfNotExists(string $key, float $value, int $ttl): bool;
 
     /**
-     * Compares the old value of key to the value which was saved in the store. 
+     * Compares the old value of key to the value which was saved in the store.
      * If it matches, method saves it to the new value and returns `true`.
      * Otherwise, it returns `false`.
      * If the key does not exist in the storage, it returns `false`.
@@ -32,8 +32,8 @@ interface StorageInterface
      * @param string $key The ID of the counter to store.
      * @param float $oldValue The old value of the counter.
      * @param float $newValue The new value of the counter.
-     * @param integer $ttl The TTL value of this counter.
-     * @return boolean
+     * @param int $ttl The TTL value of this counter.
+     * @return bool
      */
     public function saveCompareAndSwap(string $key, float $oldValue, float $newValue, int $ttl): bool;
 

@@ -19,10 +19,8 @@ final class CounterTest extends BaseCounterTest
     }
 
     /**
-     * 
      * Testing that in concurrent scenarios, when dirty reads occur,
      * the current limiter cannot be as expected By 'SimpleCacheStorage'.
-     * 
      */
     public function testConcurrentHitsWithDirtyReading(): void
     {
@@ -48,7 +46,7 @@ final class CounterTest extends BaseCounterTest
             if ($remaining <= 0) {
                 break;
             }
-        } while(true);
+        } while (true);
 
         $this->assertGreaterThan($limitHits, $totalHits);
     }

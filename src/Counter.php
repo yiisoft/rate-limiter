@@ -122,7 +122,7 @@ final class Counter implements CounterInterface
             $storedTheoreticalNextIncrementTime === null
                 ? $lastIncrementTimeInMilliseconds
                 : max($lastIncrementTimeInMilliseconds, $storedTheoreticalNextIncrementTime)
-            ) + $this->incrementIntervalInMilliseconds;
+        ) + $this->incrementIntervalInMilliseconds;
     }
 
     /**
