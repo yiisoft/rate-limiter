@@ -8,7 +8,9 @@ use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Http\Method;
@@ -221,9 +223,9 @@ final class MiddlewareTest extends TestCase
     }
 
     /**
-     * 
+     *
      * Testing fail to store updated the rate limit data after maximum attempts.
-     * 
+     *
      */
     public function testWithExceedingMaxAttempts(): void
     {
@@ -257,6 +259,51 @@ final class MiddlewareTest extends TestCase
         $this->assertEquals(Status::OK, $response->getStatusCode());
     }
 
+    public function testFailStoreUpdatedDataMiddleware(): void
+    {
+        $timer = new FrozenTimeTimer();
+        $dirtyReadCount = 2;
+        $storage = new FakeApcuStorage($dirtyReadCount);
+        $counter = new Counter(
+            $storage,
+            10,
+            1,
+            86400,
+            'rate-limiter-',
+            $timer,
+            1
+        );
+        $middleware = $this->createRateLimiter(
+            $counter,
+            new LimitAlways(),
+            new class () implements MiddlewareInterface {
+                public function process(
+                    ServerRequestInterface $request,
+                    RequestHandlerInterface $handler
+                ): ResponseInterface {
+                    $response = $handler->handle($request);
+                    return $response->withHeader('test', 'hello');
+                }
+            }
+        );
+        $middleware->process(
+            $this->createRequest(Method::GET, '/', ['REMOTE_ADDR' => '193.186.62.12']),
+            $this->createRequestHandler()
+        );
+        $middleware->process(
+            $this->createRequest(Method::GET, '/', ['REMOTE_ADDR' => '193.186.62.12']),
+            $this->createRequestHandler()
+        );
+
+        $response = $middleware->process(
+            $this->createRequest(Method::GET, '/', ['REMOTE_ADDR' => '193.186.62.12']),
+            $this->createRequestHandler()
+        );
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame('hello', $response->getHeaderLine('test'));
+    }
+
     private function createRequestHandler(): RequestHandlerInterface
     {
         $requestHandler = $this->createMock(RequestHandlerInterface::class);
@@ -277,8 +324,14 @@ final class MiddlewareTest extends TestCase
 
     private function createRateLimiter(
         CounterInterface $counter,
-        LimitPolicyInterface $limitingPolicy = null
+        ?LimitPolicyInterface $limitingPolicy = null,
+        ?MiddlewareInterface $failStoreUpdatedDataMiddleware = null
     ): LimitRequestsMiddleware {
-        return new LimitRequestsMiddleware($counter, new Psr17Factory(), $limitingPolicy);
+        return new LimitRequestsMiddleware(
+            $counter,
+            new Psr17Factory(),
+            $limitingPolicy,
+            $failStoreUpdatedDataMiddleware
+        );
     }
 }
