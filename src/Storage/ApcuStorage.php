@@ -45,6 +45,7 @@ final class ApcuStorage implements StorageInterface
 
     public function get(string $key): ?float
     {
+        /** @psalm-suppress MixedAssignment */
         $value = apcu_fetch($key);
 
         return (is_int($value) || is_float($value))
