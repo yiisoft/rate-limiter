@@ -1,7 +1,10 @@
 # Yii Rate Limiter Change Log
 
-## 2.0.1 under development
+## 3.0.0 under development
 
+- New #43: Add APCu counters storage (@jiaweipan)
+- Enh #41: Adapt package to concurrent requests, for this `StorageInterface` method `save()` split to
+  `saveIfNotExists()` and `saveCompareAndSwap()` (@jiaweipan)
 - Enh #25: Raise minimum `PHP` version to `8.0` (@terabytesoftw)
 - Chg #21: Update `yiisoft/http` dependency (@devanych)
 
