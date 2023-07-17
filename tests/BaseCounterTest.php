@@ -110,7 +110,7 @@ abstract class BaseCounterTest extends TestCase
 
         FrozenTimeTimer::setTimeMark((new MicrotimeTimer())->nowInMilliseconds() + 2);
 
-        self::assertEmpty($storage->get('rate-limiter-test'));
+        self::assertNull($storage->get('rate-limiter-test'));
     }
 
     public function testGetKey(): void

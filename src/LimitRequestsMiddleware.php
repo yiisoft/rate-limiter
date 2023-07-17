@@ -50,10 +50,10 @@ final class LimitRequestsMiddleware implements MiddlewareInterface
         return $this->addHeaders($response, $state);
     }
 
-    private function createErrorResponse(int $statusCode = Status::TOO_MANY_REQUESTS): ResponseInterface
+    private function createErrorResponse(): ResponseInterface
     {
-        $response = $this->responseFactory->createResponse($statusCode);
-        $response->getBody()->write(Status::TEXTS[$statusCode]);
+        $response = $this->responseFactory->createResponse(Status::TOO_MANY_REQUESTS);
+        $response->getBody()->write(Status::TEXTS[Status::TOO_MANY_REQUESTS]);
 
         return $response;
     }
