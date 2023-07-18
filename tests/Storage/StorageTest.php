@@ -10,22 +10,11 @@ use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FrozenTimeTimer;
 
 abstract class StorageTest extends TestCase
 {
-    protected StorageInterface $storage;
-
     protected const DEFAULT_TTL = 86400;
 
-    abstract protected function createStorage(): StorageInterface;
+    abstract protected function getStorage(): StorageInterface;
 
     abstract protected function clearStorage(): bool;
-
-    protected function getStorage(): StorageInterface
-    {
-        if (empty($this->storage)) {
-            $this->storage = $this->createStorage();
-        }
-
-        return $this->storage;
-    }
 
     protected function setUp(): void
     {

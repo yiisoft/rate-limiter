@@ -38,14 +38,14 @@ final class FakeSimpleCacheStorage implements StorageInterface
             return $this->dirtyReadValue;
         }
 
-        $readValue = $this->cache->get($key);
-        if ($readValue) {
-            $readValue = (float)$readValue;
-            $this->dirtyReadValue = $readValue;
-            $this->remainingDirtyReadCount = $this->dirtyReadCount;
-        } else {
-            $readValue = null;
+        $readValue = $this->cache->get($key, false);
+        if ($readValue === false) {
+            return null;
         }
+
+        $readValue = (float)$readValue;
+        $this->dirtyReadValue = $readValue;
+        $this->remainingDirtyReadCount = $this->dirtyReadCount;
 
         return $readValue;
     }

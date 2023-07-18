@@ -10,7 +10,7 @@ use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FrozenTimeTimer;
 
 final class ApcuStorageTest extends StorageTest
 {
-    protected function createStorage(): StorageInterface
+    protected function getStorage(): StorageInterface
     {
         return new ApcuStorage();
     }

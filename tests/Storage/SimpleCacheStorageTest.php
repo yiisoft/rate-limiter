@@ -10,7 +10,7 @@ use Yiisoft\Yii\RateLimiter\Storage\StorageInterface;
 
 final class SimpleCacheStorageTest extends StorageTest
 {
-    protected function createStorage(): StorageInterface
+    protected function getStorage(): StorageInterface
     {
         return new SimpleCacheStorage(new ArrayCache());
     }

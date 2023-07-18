@@ -42,13 +42,13 @@ final class FakeApcuStorage implements StorageInterface
         }
 
         $readValue = apcu_fetch($key);
-        if ($readValue) {
-            $readValue = (float) ($readValue / $this->fixPrecisionRate);
-            $this->dirtyReadValue = $readValue;
-            $this->remainingDirtyReadCount = $this->dirtyReadCount;
-        } else {
-            $readValue = null;
+        if ($readValue === false) {
+            return null;
         }
+        
+        $readValue = (float) ($readValue / $this->fixPrecisionRate);
+        $this->dirtyReadValue = $readValue;
+        $this->remainingDirtyReadCount = $this->dirtyReadCount;
 
         return $readValue;
     }

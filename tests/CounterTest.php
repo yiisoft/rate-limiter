@@ -13,7 +13,7 @@ use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FrozenTimeTimer;
 
 final class CounterTest extends BaseCounterTest
 {
-    protected function createStorage(): StorageInterface
+    protected function getStorage(): StorageInterface
     {
         return new SimpleCacheStorage(new ArrayCache());
     }
@@ -43,7 +43,7 @@ final class CounterTest extends BaseCounterTest
             $statistics = $counter->hit('key');
 
             $remaining = $statistics->getRemaining();
-            if ($remaining <= 0) {
+            if ($remaining === 0) {
                 break;
             }
         } while (true);

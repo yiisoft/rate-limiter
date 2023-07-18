@@ -12,7 +12,7 @@ use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FrozenTimeTimer;
 
 final class ApcuCounterTest extends BaseCounterTest
 {
-    protected function createStorage(): StorageInterface
+    protected function getStorage(): StorageInterface
     {
         return new ApcuStorage();
     }
@@ -54,7 +54,7 @@ final class ApcuCounterTest extends BaseCounterTest
             $statistics = $counter->hit('key');
 
             $remaining = $statistics->getRemaining();
-            if ($remaining <= 0) {
+            if ($remaining === 0) {
                 break;
             }
         } while (true);
