@@ -87,22 +87,22 @@ final class Counter implements CounterInterface
             $remaining = $this->calculateRemaining($lastIncrementTimeInMilliseconds, $theoreticalNextIncrementTime);
             $resetAfter = $this->calculateResetAfter($theoreticalNextIncrementTime);
 
-            if ($remaining >= 1) {
-                $isStored = $this->storeTheoreticalNextIncrementTime(
-                    $id,
-                    $theoreticalNextIncrementTime,
-                    $lastStoredTheoreticalNextIncrementTime
-                );
-                if ($isStored) {
-                    break;
-                }
+            if ($remaining === 0) {
+                break;
+            }
 
-                $attempts++;
-                if ($attempts >= $this->maxCasAttempts) {
-                    $isFailStoreUpdatedData = true;
-                    break;
-                }
-            } else {
+            $isStored = $this->storeTheoreticalNextIncrementTime(
+                $id,
+                $theoreticalNextIncrementTime,
+                $lastStoredTheoreticalNextIncrementTime
+            );
+            if ($isStored) {
+                break;
+            }
+
+            $attempts++;
+            if ($attempts >= $this->maxCasAttempts) {
+                $isFailStoreUpdatedData = true;
                 break;
             }
         } while (true);

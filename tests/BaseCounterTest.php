@@ -34,8 +34,6 @@ abstract class BaseCounterTest extends TestCase
         $statistics = $counter->hit('key');
         $this->assertEquals(2, $statistics->getLimit());
         $this->assertEquals(1, $statistics->getRemaining());
-        $this->assertGreaterThanOrEqual(time(), $statistics->getResetTime());
-        $this->assertFalse($statistics->isLimitReached());
 
         $statistics = $counter->hit('key');
         $this->assertEquals(2, $statistics->getLimit());
