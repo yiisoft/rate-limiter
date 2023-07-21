@@ -31,7 +31,7 @@ abstract class BaseCounterTest extends TestCase
     {
         $counter = new Counter($this->getStorage(), 2, 4);
 
-        $statistics = $counter->hit('key');
+        $counter->hit('key');
         $statistics = $counter->hit('key');
 
         $this->assertEquals(2, $statistics->getLimit());
