@@ -134,10 +134,12 @@ final class Counter implements CounterInterface
     ): int {
         $incrementAllowedAt = $theoreticalNextIncrementTime - $this->periodInMilliseconds;
 
-        return (int) (
-            round($lastIncrementTimeInMilliseconds - $incrementAllowedAt) /
-            $this->incrementIntervalInMilliseconds
-        );
+        $remainingTimeInMilliseconds = round($lastIncrementTimeInMilliseconds - $incrementAllowedAt);
+        if ($remainingTimeInMilliseconds > 0) {
+            return (int) ($remainingTimeInMilliseconds / $this->incrementIntervalInMilliseconds);
+        }
+
+        return 0;
     }
 
     private function getLastStoredTheoreticalNextIncrementTime(string $id): ?float
