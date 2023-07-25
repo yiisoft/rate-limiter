@@ -35,7 +35,7 @@ final class ApcuStorageTest extends StorageTest
     {
         $storage = $this->getStorage();
 
-        $value = round((new DateTimeImmutable())->format('U.u') * 1000);
+        $value = round((float)$this->timer->now()->format('U.u') * 1000);
         $storage->saveIfNotExists('exists_key', $value, self::DEFAULT_TTL);
 
         $result = $storage->saveIfNotExists('exists_key', $value, self::DEFAULT_TTL);
@@ -47,7 +47,7 @@ final class ApcuStorageTest extends StorageTest
     {
         $storage = $this->getStorage();
 
-        $newValue = round((new DateTimeImmutable())->format('U.u') * 1000);
+        $newValue = round((float)$this->timer->now()->format('U.u') * 1000);
         $oldValue = (int) $storage->get('new_key');
 
         $result = $storage->saveCompareAndSwap(
@@ -64,7 +64,7 @@ final class ApcuStorageTest extends StorageTest
     {
         $storage = $this->getStorage();
 
-        $oldValue = round((new DateTimeImmutable())->format('U.u') * 1000);
+        $oldValue = round((float)$this->timer->now()->format('U.u') * 1000);
         $storage->saveIfNotExists('exists_key', $oldValue, self::DEFAULT_TTL);
 
         $oldValue = $oldValue + 200;

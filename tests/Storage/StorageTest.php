@@ -34,7 +34,7 @@ abstract class StorageTest extends TestCase
     {
         $storage = $this->getStorage();
 
-        $want = round((new DateTimeImmutable())->format('U.u') * 1000);
+        $want = round((float)$this->timer->now()->format('U.u') * 1000);
 
         $storage->saveIfNotExists('exists_key', $want, self::DEFAULT_TTL);
 
@@ -47,7 +47,7 @@ abstract class StorageTest extends TestCase
     {
         $storage = $this->getStorage();
 
-        $value = round((new DateTimeImmutable())->format('U.u') * 1000);
+        $value = round((float)$this->timer->now()->format('U.u') * 1000);
 
         $result = $storage->saveIfNotExists('new_key', $value, self::DEFAULT_TTL);
 
@@ -58,7 +58,7 @@ abstract class StorageTest extends TestCase
     {
         $storage = $this->getStorage();
 
-        $oldValue = round((new DateTimeImmutable())->format('U.u') * 1000);
+        $oldValue = round((float)$this->timer->now()->format('U.u') * 1000);
         $storage->saveIfNotExists('exists_key', $oldValue, self::DEFAULT_TTL);
 
         $newValue = $oldValue + 100;
