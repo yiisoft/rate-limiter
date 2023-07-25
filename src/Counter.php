@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\RateLimiter;
 
-use _PHPStan_d55c4f2c2\React\Http\Io\Clock;
 use InvalidArgumentException;
 use Psr\Clock\ClockInterface;
 use Yiisoft\Yii\RateLimiter\Storage\StorageInterface;
 use Yiisoft\Yii\RateLimiter\Time\SystemClock;
-use Yiisoft\Yii\RateLimiter\Time\TimerInterface;
 
 /**
  * Counter implements generic cell rate limit algorithm (GCRA) that ensures that after reaching the limit further

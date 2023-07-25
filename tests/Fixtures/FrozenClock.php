@@ -12,12 +12,13 @@ use Psr\Clock\ClockInterface;
  */
 final class FrozenClock implements ClockInterface
 {
-
     private DateTimeImmutable $now;
+
     public function __construct()
     {
         $this->now = new DateTimeImmutable();
     }
+
     public function now(): DateTimeImmutable
     {
         return $this->now;

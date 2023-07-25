@@ -7,7 +7,6 @@ namespace Yiisoft\Yii\RateLimiter\Tests\Storage;
 use DateTimeImmutable;
 use Yiisoft\Yii\RateLimiter\Storage\ApcuStorage;
 use Yiisoft\Yii\RateLimiter\Storage\StorageInterface;
-use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FrozenClock;
 
 final class ApcuStorageTest extends StorageTest
 {

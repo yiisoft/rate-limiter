@@ -45,7 +45,7 @@ final class FakeApcuStorage implements StorageInterface
         if ($readValue === false) {
             return null;
         }
-        
+
         $readValue = (float) ($readValue / $this->fixPrecisionRate);
         $this->dirtyReadValue = $readValue;
         $this->remainingDirtyReadCount = $this->dirtyReadCount;

@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\RateLimiter\Tests;
 
-use DateTimeImmutable;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Yii\RateLimiter\Counter;
 use Yiisoft\Yii\RateLimiter\Storage\StorageInterface;
 use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FrozenClock;
-use Yiisoft\Yii\RateLimiter\Time\SystemClock;
 use Yiisoft\Yii\RateLimiter\Tests\Support\Assert;
 
 abstract class BaseCounterTest extends TestCase
