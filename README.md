@@ -23,14 +23,14 @@ If too many requests are received from a user within the stated period of the ti
 
 ## Requirements
 
-- PHP 7.4 or higher.
+- PHP 8.0 or higher.
 
 ## Installation
 
 The package could be installed with composer:
 
 ```shell
-composer install yiisoft/rate-limiter --prefer-dist
+composer install yiisoft/rate-limiter
 ```
 
 ## General usage
@@ -92,9 +92,11 @@ Another way it to implement `Yiisoft\Yii\RateLimiter\Policy\LimitPolicyInterface
 
 ### Implementing your own counter storage
 
-By default, the package provides `\Yiisoft\Yii\RateLimiter\Storage\SimpleCacheStorage` that stores counters
-in any [PSR-16](https://www.php-fig.org/psr/psr-16/) cache. To have your own storage
-implement `Yiisoft\Yii\RateLimiter\Storage\StorageInterface`. 
+There are two ready to use counter storages available in the package:
+- `\Yiisoft\Yii\RateLimiter\Storage\SimpleCacheStorage` - stores counters in any [PSR-16](https://www.php-fig.org/psr/psr-16/) cache.
+- `\Yiisoft\Yii\RateLimiter\Storage\ApcuStorage` - stores counters by using the [APCu PHP extension](http://www.php.net/apcu) while taking concurrency into account.
+
+To use your own storage implement `Yiisoft\Yii\RateLimiter\Storage\StorageInterface`. 
 
 ## Testing
 

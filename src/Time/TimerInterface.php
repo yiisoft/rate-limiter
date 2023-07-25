@@ -6,5 +6,5 @@ namespace Yiisoft\Yii\RateLimiter\Time;
 
 interface TimerInterface
 {
-    public function nowInMilliseconds(): int;
+    public function nowInMilliseconds(): float;
 }

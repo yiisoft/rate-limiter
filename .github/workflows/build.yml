@@ -25,6 +25,8 @@ jobs:
   phpunit:
     uses: yiisoft/actions/.github/workflows/phpunit.yml@master
     with:
+      extensions: apcu
+      ini-values: apc.enabled=1,apc.shm_size=32M,apc.enable_cli=1
       os: >-
         ['ubuntu-latest', 'windows-latest']
       php: >-
