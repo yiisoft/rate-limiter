@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\RateLimiter\Tests\Storage;
 
-use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Yii\RateLimiter\Storage\StorageInterface;
 
