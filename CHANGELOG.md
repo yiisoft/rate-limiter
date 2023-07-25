@@ -9,6 +9,7 @@
 - Chg #21: Update `yiisoft/http` dependency (@devanych)
 - Chg #34: Raise `psr/http-message` dependency version to `^1.1|^2.0` (@samdark)
 - Chg #31: Raise `yiisoft/cache` dependency version to `^3.0` (@samdark)
+- Enh #26: Add `psr/simple-cache` dependency version `^3.0` support (@vjik)
 
 ## 2.0.0 August 15, 2021
 
