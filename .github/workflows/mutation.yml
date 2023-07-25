@@ -23,6 +23,8 @@ jobs:
   mutation:
     uses: yiisoft/actions/.github/workflows/roave-infection.yml@master
     with:
+      extensions: apcu
+      ini-values: apc.enabled=1,apc.shm_size=32M,apc.enable_cli=1
       os: >-
         ['ubuntu-latest']
       php: >-

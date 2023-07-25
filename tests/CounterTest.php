@@ -4,106 +4,50 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\RateLimiter\Tests;
 
-use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
 use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Yii\RateLimiter\Counter;
 use Yiisoft\Yii\RateLimiter\Storage\SimpleCacheStorage;
-use Yiisoft\Yii\RateLimiter\Time\MicrotimeTimer;
-use Yiisoft\Yii\RateLimiter\Tests\Support\Assert;
+use Yiisoft\Yii\RateLimiter\Storage\StorageInterface;
+use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FakeSimpleCacheStorage;
+use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FrozenTimeTimer;
 
-final class CounterTest extends TestCase
+final class CounterTest extends BaseCounterTest
 {
-    public function testStatisticsShouldBeCorrectWhenLimitIsNotReached(): void
+    protected function getStorage(): StorageInterface
     {
-        $counter = new Counter(new SimpleCacheStorage(new ArrayCache()), 2, 5);
-
-        $statistics = $counter->hit('key');
-        $this->assertEquals(2, $statistics->getLimit());
-        $this->assertEquals(1, $statistics->getRemaining());
-        $this->assertGreaterThanOrEqual(time(), $statistics->getResetTime());
-        $this->assertFalse($statistics->isLimitReached());
+        return new SimpleCacheStorage(new ArrayCache());
     }
 
-    public function testStatisticsShouldBeCorrectWhenLimitIsReached(): void
-    {
-        $counter = new Counter(new SimpleCacheStorage(new ArrayCache()), 2, 4);
-
-        $statistics = $counter->hit('key');
-        $this->assertEquals(2, $statistics->getLimit());
-        $this->assertEquals(1, $statistics->getRemaining());
-        $this->assertGreaterThanOrEqual(time(), $statistics->getResetTime());
-        $this->assertFalse($statistics->isLimitReached());
-
-        $statistics = $counter->hit('key');
-        $this->assertEquals(2, $statistics->getLimit());
-        $this->assertEquals(0, $statistics->getRemaining());
-        $this->assertGreaterThanOrEqual(time(), $statistics->getResetTime());
-        $this->assertTrue($statistics->isLimitReached());
-    }
-
-    public function testShouldNotBeAbleToSetInvalidLimit(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        new Counter(new SimpleCacheStorage(new ArrayCache()), 0, 60);
-    }
-
-    public function testShouldNotBeAbleToSetInvalidPeriod(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        new Counter(new SimpleCacheStorage(new ArrayCache()), 10, 0);
-    }
-
-    public function testIncrementMustBeUniformAfterLimitIsReached(): void
+    /**
+     * Testing that in concurrent scenarios, when dirty reads occur,
+     * the current limiter cannot be as expected By 'SimpleCacheStorage'.
+     */
+    public function testConcurrentHitsWithDirtyReading(): void
     {
         $timer = new FrozenTimeTimer();
+        $storage = new FakeSimpleCacheStorage(new ArrayCache(), 5);
+        $limitHits = 10;
         $counter = new Counter(
-            new SimpleCacheStorage(new ArrayCache()),
-            10,
+            $storage,
+            $limitHits,
             1,
             86400,
             'rate-limiter-',
             $timer
         );
 
-        // Start with the limit reached.
-        for ($i = 0; $i < 10; $i++) {
-            $counter->hit('key');
-        }
+        $totalHits = 0;
+        do {
+            ++$totalHits;
 
-        for ($i = 0; $i < 5; $i++) {
-            // Move timer forward for (period in milliseconds / limit)
-            // i.e. once in period / limit remaining allowance should be increased by 1.
-            FrozenTimeTimer::setTimeMark($timer->nowInMilliseconds() + 100);
             $statistics = $counter->hit('key');
-            $this->assertEquals(1, $statistics->getRemaining());
-        }
-    }
 
-    public function testCustomTtl(): void
-    {
-        $storage = new SimpleCacheStorage(new ArrayCache());
+            $remaining = $statistics->getRemaining();
+            if ($remaining === 0) {
+                break;
+            }
+        } while (true);
 
-        $counter = new Counter(
-            $storage,
-            1,
-            1,
-            1,
-            'rate-limiter-',
-            new FrozenTimeTimer()
-        );
-
-        $counter->hit('test');
-
-        FrozenTimeTimer::setTimeMark((new MicrotimeTimer())->nowInMilliseconds() + 2);
-
-        self::assertNull($storage->get('rate-limiter-test'));
-    }
-
-    public function testGetKey(): void
-    {
-        $counter = new Counter(new SimpleCacheStorage(new ArrayCache()), 1, 1, 1, 'rate-limiter-');
-
-        $this->assertSame('rate-limiter-key', Assert::invokeMethod($counter, 'getStorageKey', ['key']));
+        $this->assertGreaterThan($limitHits, $totalHits);
     }
 }

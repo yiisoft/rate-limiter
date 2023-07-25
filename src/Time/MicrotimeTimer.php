@@ -8,8 +8,8 @@ final class MicrotimeTimer implements TimerInterface
 {
     private const MILLISECONDS_PER_SECOND = 1000;
 
-    public function nowInMilliseconds(): int
+    public function nowInMilliseconds(): float
     {
-        return (int) round(microtime(true) * self::MILLISECONDS_PER_SECOND);
+        return round(microtime(true) * self::MILLISECONDS_PER_SECOND);
     }
 }

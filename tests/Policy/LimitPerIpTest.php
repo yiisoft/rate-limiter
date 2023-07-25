@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\RateLimiter\Tests;
+namespace Yiisoft\Yii\RateLimiter\Tests\Policy;
 
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
