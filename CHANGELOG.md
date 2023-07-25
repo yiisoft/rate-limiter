@@ -2,6 +2,7 @@
 
 ## 3.0.0 under development
 
+- Chg #44: Use PSR-20 `ClockInterface` instead of `TimerInterface` (@samdark)
 - New #43: Add APCu counters storage (@jiaweipan)
 - Enh #41: Adapt package to concurrent requests, for this `StorageInterface` method `save()` split to
   `saveIfNotExists()` and `saveCompareAndSwap()` (@jiaweipan)

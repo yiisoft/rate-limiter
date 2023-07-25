@@ -15,7 +15,7 @@
 [![static analysis](https://github.com/yiisoft/rate-limiter/workflows/static%20analysis/badge.svg)](https://github.com/yiisoft/rate-limiter/actions?query=workflow%3A%22static+analysis%22)
 [![type-coverage](https://shepherd.dev/github/yiisoft/rate-limiter/coverage.svg)](https://shepherd.dev/github/yiisoft/rate-limiter)
 
-Rate limiter middleware helps to prevent abuse by limiting the number of requests that could be me made consequentially.
+Rate limiter middleware helps to prevent abuse by limiting the number of requests that could be made consequentially.
 
 For example, you may want to limit the API usage of each user to be at most 100 API calls within a period of 10 minutes.
 If too many requests are received from a user within the stated period of the time, a response with status code 429
@@ -61,9 +61,9 @@ are limited and 5 is a period to apply limit to, in seconds.
 The `Counter` implements [generic cell rate limit algorithm (GCRA)](https://en.wikipedia.org/wiki/Generic_cell_rate_algorithm)
 that ensures that after reaching the limit further increments are distributed equally.
 
-> Note: While it is sufficiently effective, it is preferred to use [Nginx](https://www.nginx.com/blog/rate-limiting-nginx/)
+> Note: While it's sufficiently effective, it's preferred to use [Nginx](https://www.nginx.com/blog/rate-limiting-nginx/)
 > or another webserver capabilities for rate limiting. This package allows rate-limiting in the project with deployment
-> environment you cannot control such as installable CMS. 
+> environment you can't control such as installable CMS. 
 
 ### Implementing your own limiting policy
 
@@ -84,7 +84,7 @@ Easiest way to customize a policy is to use `LimitCallback`:
 
 ```php
 $middleware = new LimitRequestsMiddleware($counter, $responseFactory, new LimitCallback(function (ServerRequestInterface $request): string {
-    // return user id from database if authentication id used i.e. limit guests and each authenticated user separately.
+    // return user id from a database if authentication id used i.e. limit guests and each authenticated user separately.
 }));
 ```
 
@@ -127,7 +127,7 @@ The code is statically analyzed with [Psalm](https://psalm.dev/). To run static 
 
 ## License
 
-The Yii Rate Limiter Middleware is free software. It is released under the terms of the BSD License.
+The Yii Rate Limiter Middleware is free software. It's released under the terms of the BSD License.
 Please see [`LICENSE`](./LICENSE.md) for more information.
 
 Maintained by [Yii Software](https://www.yiiframework.com/).

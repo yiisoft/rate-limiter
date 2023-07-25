@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\RateLimiter\Tests;
 
+use DateTimeImmutable;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Yii\RateLimiter\Counter;
 use Yiisoft\Yii\RateLimiter\Storage\StorageInterface;
-use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FrozenTimeTimer;
-use Yiisoft\Yii\RateLimiter\Time\MicrotimeTimer;
+use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FrozenClock;
+use Yiisoft\Yii\RateLimiter\Time\SystemClock;
 use Yiisoft\Yii\RateLimiter\Tests\Support\Assert;
 
 abstract class BaseCounterTest extends TestCase
@@ -54,7 +55,8 @@ abstract class BaseCounterTest extends TestCase
 
     public function testIncrementMustBeUniformAfterLimitIsReached(): void
     {
-        $timer = new FrozenTimeTimer();
+        $timer = new FrozenClock();
+
         $counter = new Counter(
             $this->getStorage(),
             10,
@@ -72,7 +74,7 @@ abstract class BaseCounterTest extends TestCase
         for ($i = 0; $i < 5; $i++) {
             // Move timer forward for (period in milliseconds / limit)
             // i.e. once in period / limit remaining allowance should be increased by 1.
-            FrozenTimeTimer::setTimeMark($timer->nowInMilliseconds() + 100);
+            $timer->modify('+100 milliseconds');
             $statistics = $counter->hit('key');
             $this->assertEquals(1, $statistics->getRemaining());
         }
@@ -82,18 +84,19 @@ abstract class BaseCounterTest extends TestCase
     {
         $storage = $this->getStorage();
 
+        $clock = new FrozenClock();
         $counter = new Counter(
             $storage,
             1,
             1,
             1,
             'rate-limiter-',
-            new FrozenTimeTimer()
+            $clock
         );
 
         $counter->hit('test');
 
-        FrozenTimeTimer::setTimeMark((new MicrotimeTimer())->nowInMilliseconds() + 2);
+        $clock->modify('+2 milliseconds');
 
         self::assertNull($storage->get('rate-limiter-test'));
     }

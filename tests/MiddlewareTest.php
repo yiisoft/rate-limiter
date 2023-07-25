@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\RateLimiter\Tests;
 
+use DateTimeImmutable;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\ServerRequest;
@@ -25,7 +26,7 @@ use Yiisoft\Yii\RateLimiter\LimitRequestsMiddleware;
 use Yiisoft\Yii\RateLimiter\Storage\SimpleCacheStorage;
 use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FakeApcuStorage;
 use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FakeCounter;
-use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FrozenTimeTimer;
+use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FrozenClock;
 
 final class MiddlewareTest extends TestCase
 {
@@ -227,7 +228,7 @@ final class MiddlewareTest extends TestCase
      */
     public function testWithExceedingMaxAttempts(): void
     {
-        $timer = new FrozenTimeTimer();
+        $timer = new FrozenClock();
         $dirtyReadCount = 2;
         $storage = new FakeApcuStorage($dirtyReadCount);
         $counter = new Counter(
@@ -259,7 +260,7 @@ final class MiddlewareTest extends TestCase
 
     public function testFailStoreUpdatedDataMiddleware(): void
     {
-        $timer = new FrozenTimeTimer();
+        $timer = new FrozenClock();
         $dirtyReadCount = 2;
         $storage = new FakeApcuStorage($dirtyReadCount);
         $counter = new Counter(

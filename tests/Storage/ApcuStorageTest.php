@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\RateLimiter\Tests\Storage;
 
+use DateTimeImmutable;
 use Yiisoft\Yii\RateLimiter\Storage\ApcuStorage;
 use Yiisoft\Yii\RateLimiter\Storage\StorageInterface;
-use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FrozenTimeTimer;
+use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FrozenClock;
 
 final class ApcuStorageTest extends StorageTest
 {
@@ -35,7 +36,7 @@ final class ApcuStorageTest extends StorageTest
     {
         $storage = $this->getStorage();
 
-        $value = (new FrozenTimeTimer())->nowInMilliseconds();
+        $value = (new DateTimeImmutable())->format('U.u') * 1000;
         $storage->saveIfNotExists('exists_key', $value, self::DEFAULT_TTL);
 
         $result = $storage->saveIfNotExists('exists_key', $value, self::DEFAULT_TTL);
@@ -47,7 +48,7 @@ final class ApcuStorageTest extends StorageTest
     {
         $storage = $this->getStorage();
 
-        $newValue = (new FrozenTimeTimer())->nowInMilliseconds();
+        $newValue = (new DateTimeImmutable())->format('U.u') * 1000;
         $oldValue = (int) $storage->get('new_key');
 
         $result = $storage->saveCompareAndSwap(
@@ -60,11 +61,11 @@ final class ApcuStorageTest extends StorageTest
         $this->assertFalse($result);
     }
 
-    public function testSaveCompareAndSwapWithExistsKeyButOldValueDiffrent(): void
+    public function testSaveCompareAndSwapWithExistsKeyButOldValueDifferent(): void
     {
         $storage = $this->getStorage();
 
-        $oldValue = (new FrozenTimeTimer())->nowInMilliseconds();
+        $oldValue = (new DateTimeImmutable())->format('U.u') * 1000;
         $storage->saveIfNotExists('exists_key', $oldValue, self::DEFAULT_TTL);
 
         $oldValue = $oldValue + 200;

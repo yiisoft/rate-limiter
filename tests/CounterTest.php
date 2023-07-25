@@ -9,7 +9,7 @@ use Yiisoft\Yii\RateLimiter\Counter;
 use Yiisoft\Yii\RateLimiter\Storage\SimpleCacheStorage;
 use Yiisoft\Yii\RateLimiter\Storage\StorageInterface;
 use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FakeSimpleCacheStorage;
-use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FrozenTimeTimer;
+use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FrozenClock;
 
 final class CounterTest extends BaseCounterTest
 {
@@ -20,11 +20,11 @@ final class CounterTest extends BaseCounterTest
 
     /**
      * Testing that in concurrent scenarios, when dirty reads occur,
-     * the current limiter cannot be as expected By 'SimpleCacheStorage'.
+     * the current limiter can't be as expected By 'SimpleCacheStorage'.
      */
     public function testConcurrentHitsWithDirtyReading(): void
     {
-        $timer = new FrozenTimeTimer();
+        $timer = new FrozenClock();
         $storage = new FakeSimpleCacheStorage(new ArrayCache(), 5);
         $limitHits = 10;
         $counter = new Counter(

@@ -28,7 +28,8 @@
         "psr/http-server-handler": "^1.0",
         "psr/http-server-middleware": "^1.0",
         "psr/simple-cache": "^2.0|^3.0",
-        "yiisoft/http": "^1.2"
+        "yiisoft/http": "^1.2",
+        "psr/clock": "^1.0"
     },
     "require-dev": {
         "ext-apcu": "*",

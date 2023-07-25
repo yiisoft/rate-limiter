@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\RateLimiter\Tests\Storage;
 
+use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Yii\RateLimiter\Storage\StorageInterface;
-use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FrozenTimeTimer;
 
 abstract class StorageTest extends TestCase
 {
@@ -34,7 +34,7 @@ abstract class StorageTest extends TestCase
     {
         $storage = $this->getStorage();
 
-        $want = (new FrozenTimeTimer())->nowInMilliseconds();
+        $want = (new DateTimeImmutable())->format('U.u') * 1000;
 
         $storage->saveIfNotExists('exists_key', $want, self::DEFAULT_TTL);
 
@@ -47,7 +47,7 @@ abstract class StorageTest extends TestCase
     {
         $storage = $this->getStorage();
 
-        $value = (new FrozenTimeTimer())->nowInMilliseconds();
+        $value = (new DateTimeImmutable())->format('U.u') * 1000;
 
         $result = $storage->saveIfNotExists('new_key', $value, self::DEFAULT_TTL);
 
@@ -58,7 +58,7 @@ abstract class StorageTest extends TestCase
     {
         $storage = $this->getStorage();
 
-        $oldValue = (new FrozenTimeTimer())->nowInMilliseconds();
+        $oldValue = (new DateTimeImmutable())->format('U.u') * 1000;
         $storage->saveIfNotExists('exists_key', $oldValue, self::DEFAULT_TTL);
 
         $newValue = $oldValue + 100;

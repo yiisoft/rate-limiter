@@ -8,7 +8,7 @@ use Yiisoft\Yii\RateLimiter\Counter;
 use Yiisoft\Yii\RateLimiter\Storage\ApcuStorage;
 use Yiisoft\Yii\RateLimiter\Storage\StorageInterface;
 use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FakeApcuStorage;
-use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FrozenTimeTimer;
+use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FrozenClock;
 
 final class ApcuCounterTest extends BaseCounterTest
 {
@@ -35,7 +35,7 @@ final class ApcuCounterTest extends BaseCounterTest
      */
     public function testConcurrentHitsWithDirtyReading(): void
     {
-        $timer = new FrozenTimeTimer();
+        $timer = new FrozenClock();
         $storage = new FakeApcuStorage(5);
         $limitHits = 10;
         $counter = new Counter(
@@ -64,7 +64,7 @@ final class ApcuCounterTest extends BaseCounterTest
 
     public function testIsExceedingMaxAttempts(): void
     {
-        $timer = new FrozenTimeTimer();
+        $timer = new FrozenClock();
         $dirtyReadCount = 2;
         $storage = new FakeApcuStorage($dirtyReadCount);
         $counter = new Counter(

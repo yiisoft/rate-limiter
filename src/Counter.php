@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\RateLimiter;
 
+use _PHPStan_d55c4f2c2\React\Http\Io\Clock;
 use InvalidArgumentException;
+use Psr\Clock\ClockInterface;
 use Yiisoft\Yii\RateLimiter\Storage\StorageInterface;
-use Yiisoft\Yii\RateLimiter\Time\MicrotimeTimer;
+use Yiisoft\Yii\RateLimiter\Time\SystemClock;
 use Yiisoft\Yii\RateLimiter\Time\TimerInterface;
 
 /**
@@ -28,19 +30,19 @@ final class Counter implements CounterInterface
     private int $periodInMilliseconds;
 
     /**
-     * @var float Maximum interval before next increment.
-     * In GCRA it is known as emission interval.
+     * @var float Maximum interval before the next increment.
+     * In GCRA it's known as an emission interval.
      */
     private float $incrementIntervalInMilliseconds;
-    private TimerInterface $timer;
+    private ClockInterface $timer;
 
     /**
      * @param StorageInterface $storage Storage to use for counter values.
-     * @param int $limit Maximum number of increments that could be performed before increments are limited.
+     * @param int $limit A maximum number of increments that could be performed before increments are limited.
      * @param int $periodInSeconds Period to apply limit to.
      * @param int $storageTtlInSeconds Storage TTL. Should be higher than `$periodInSeconds`.
      * @param string $storagePrefix Storage prefix.
-     * @param TimerInterface|null $timer Timer instance to get current time from.
+     * @param ClockInterface|null $timer Timer instance to get current time from.
      * @param int $maxCasAttempts Maximum number of times to retry saveIfNotExists/saveCompareAndSwap operations before returning an error.
      */
     public function __construct(
@@ -49,7 +51,7 @@ final class Counter implements CounterInterface
         int $periodInSeconds,
         private int $storageTtlInSeconds = self::DEFAULT_TTL,
         private string $storagePrefix = self::ID_PREFIX,
-        TimerInterface|null $timer = null,
+        ClockInterface|null $timer = null,
         private int $maxCasAttempts = self::DEFAULT_MAX_CAS_ATTEMPTS,
     ) {
         if ($limit < 1) {
@@ -61,7 +63,7 @@ final class Counter implements CounterInterface
         }
 
         $this->periodInMilliseconds = $periodInSeconds * self::MILLISECONDS_PER_SECOND;
-        $this->timer = $timer ?: new MicrotimeTimer();
+        $this->timer = $timer ?: new SystemClock();
         $this->incrementIntervalInMilliseconds = $this->periodInMilliseconds / $this->limit;
     }
 
@@ -75,7 +77,7 @@ final class Counter implements CounterInterface
         do {
             // Last increment time.
             // In GCRA it's known as arrival time.
-            $lastIncrementTimeInMilliseconds = $this->timer->nowInMilliseconds();
+            $lastIncrementTimeInMilliseconds = $this->timer->now()->format('U.u') * 1000;
 
             $lastStoredTheoreticalNextIncrementTime = $this->getLastStoredTheoreticalNextIncrementTime($id);
 
@@ -112,7 +114,7 @@ final class Counter implements CounterInterface
 
     /**
      * @return float Theoretical increment time that would be expected from equally spaced increments at exactly rate
-     * limit. In GCRA it is known as TAT, theoretical arrival time.
+     * limit. In GCRA it's known as TAT, theoretical arrival time.
      */
     private function calculateTheoreticalNextIncrementTime(
         float $lastIncrementTimeInMilliseconds,
