@@ -17,7 +17,6 @@ final class ApcuStorage implements StorageInterface
     private const DEFAULT_FIX_PRECISION_RATE = 1000;
 
     /**
-     * @param int $fixPrecisionRate
      * Apcu_cas of ACPu does not support float,  and yet supports int.
      * APCu's stored value multiply by $fixPrecisionRate converts to int,
      * AND the getter's value divide by $fixPrecisionRate converts to float.
