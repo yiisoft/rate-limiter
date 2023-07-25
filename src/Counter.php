@@ -75,7 +75,7 @@ final class Counter implements CounterInterface
         do {
             // Last increment time.
             // In GCRA it's known as arrival time.
-            $lastIncrementTimeInMilliseconds = $this->timer->now()->format('U.u') * 1000;
+            $lastIncrementTimeInMilliseconds = round($this->timer->now()->format('U.u') * 1000);
 
             $lastStoredTheoreticalNextIncrementTime = $this->getLastStoredTheoreticalNextIncrementTime($id);
 
