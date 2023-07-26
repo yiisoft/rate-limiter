@@ -1,5 +1,9 @@
 # Yii Rate Limiter Change Log
 
+## 3.0.1 under development
+
+- no changes in this release.
+
 ## 3.0.0 July 26, 2023
 
 - New #43: Add APCu counters storage (@jiaweipan)
