@@ -8,7 +8,7 @@ use function is_float;
 use function is_int;
 
 /**
- * To use this storage, the [APCu PHP extension](http://www.php.net/apcu) must be loaded,
+ * To use this storage, the [APCu PHP extension](https://www.php.net/apcu) must be loaded,
  * And you should add "apc.enabled = 1" to your php.ini.
  * In order to enable APCu for CLI you should add "apc.enable_cli = 1" to your php.ini.
  */
