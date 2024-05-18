@@ -1,7 +1,6 @@
-# Upgrading Instructions for Yii Rate Limiter
+# Yii Rate Limiter Middleware Upgrading Instructions
 
-This file contains the upgrade notes for the Yii Rate Limiter.
-These notes highlight changes that could break your application when you upgrade it from one major version to another.
+This file contains notes that highlight changes that could break your application when you upgrade it from one major version to another.
 
 ## 2.0.0
 
