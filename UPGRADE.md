@@ -7,7 +7,7 @@ application when you upgrade the package from one version to another.
 > to upgrade from version A to version C and there is version B between A and C, you need
 > to following the instructions for both A and B.
 
-## Upgrade from 1.x to 2.0.0
+## Upgrade from 1.x
 
 In order to switch from version 1 to version 2 you need to update initialization code: 
 
