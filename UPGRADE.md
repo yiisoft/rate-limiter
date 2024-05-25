@@ -1,8 +1,13 @@
-# Yii Rate Limiter Middleware Upgrading Instructions
+# Upgrading Instructions for Yii Rate Limiter Middleware
 
-This file contains notes that highlight changes that could break your application when you upgrade it from one major version to another.
+This file contains the upgrade notes. These notes highlight changes that could break your
+application when you upgrade the package from one version to another.
 
-## 2.0.0
+> **Important!** The following upgrading instructions are cumulative. That is, if you want
+> to upgrade from version A to version C and there is version B between A and C, you need
+> to following the instructions for both A and B.
+
+## Upgrade from 1.x
 
 In order to switch from version 1 to version 2 you need to update initialization code: 
 
