@@ -1,23 +1,14 @@
 on:
   pull_request:
-    paths-ignore:
-      - 'docs/**'
-      - 'README.md'
-      - 'CHANGELOG.md'
-      - '.gitignore'
-      - '.gitattributes'
-      - 'infection.json.dist'
-      - 'phpunit.xml.dist'
+    paths: &paths
+      - 'src/**'
+      - '.github/workflows/static.yml'
+      - 'psalm.xml'
+      - 'composer.json'
 
   push:
-    paths-ignore:
-      - 'docs/**'
-      - 'README.md'
-      - 'CHANGELOG.md'
-      - '.gitignore'
-      - '.gitattributes'
-      - 'infection.json.dist'
-      - 'phpunit.xml.dist'
+    branches: ['master']
+    paths: *paths
 
 name: static analysis
 
@@ -25,7 +16,5 @@ jobs:
   psalm:
     uses: yiisoft/actions/.github/workflows/psalm.yml@master
     with:
-      os: >-
-        ['ubuntu-latest']
       php: >-
-        ['8.0', '8.1', '8.2']
+        ['8.0', '8.1', '8.2', '8.3', '8.4', '8.5']
