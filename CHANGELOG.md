@@ -2,6 +2,7 @@
 
 ## 3.0.1 under development
 
+- Chg #82: Change PHP version constraint to `8.0 - 8.5` (@vjik)
 - Enh #81: Add explicit imports for functions and classes in use sections (@vjik)
 
 ## 3.0.0 July 26, 2023
