@@ -8,18 +8,11 @@ use Yiisoft\Yii\RateLimiter\Storage\ApcuStorage;
 use Yiisoft\Yii\RateLimiter\Storage\StorageInterface;
 use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FrozenTimeTimer;
 
+use function extension_loaded;
+use function ini_get;
+
 final class ApcuStorageTest extends StorageTest
 {
-    protected function getStorage(): StorageInterface
-    {
-        return new ApcuStorage();
-    }
-
-    protected function clearStorage(): bool
-    {
-        return apcu_clear_cache();
-    }
-
     public static function setUpBeforeClass(): void
     {
         if (!extension_loaded('apcu')) {
@@ -54,7 +47,7 @@ final class ApcuStorageTest extends StorageTest
             'new_key',
             $oldValue,
             $newValue,
-            self::DEFAULT_TTL
+            self::DEFAULT_TTL,
         );
 
         $this->assertFalse($result);
@@ -75,7 +68,7 @@ final class ApcuStorageTest extends StorageTest
             'exists_key',
             $oldValue,
             $newValue,
-            self::DEFAULT_TTL
+            self::DEFAULT_TTL,
         );
 
         $this->assertFalse($result);
@@ -89,5 +82,15 @@ final class ApcuStorageTest extends StorageTest
         $value = $storage->get('key');
 
         $this->assertNull($value);
+    }
+
+    protected function getStorage(): StorageInterface
+    {
+        return new ApcuStorage();
+    }
+
+    protected function clearStorage(): bool
+    {
+        return apcu_clear_cache();
     }
 }

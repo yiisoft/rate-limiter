@@ -29,7 +29,7 @@ final class LimitRequestsMiddleware implements MiddlewareInterface
     public function __construct(
         private CounterInterface $counter,
         private ResponseFactoryInterface $responseFactory,
-        LimitPolicyInterface|null $limitingPolicy = null,
+        ?LimitPolicyInterface $limitingPolicy = null,
         private ?MiddlewareInterface $failStoreUpdatedDataMiddleware = null,
     ) {
         $this->limitingPolicy = $limitingPolicy ?: new LimitPerIp();

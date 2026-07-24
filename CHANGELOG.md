@@ -2,7 +2,7 @@
 
 ## 3.0.1 under development
 
-- no changes in this release.
+- Enh #81: Add explicit imports for functions and classes in use sections (@vjik)
 
 ## 3.0.0 July 26, 2023
 

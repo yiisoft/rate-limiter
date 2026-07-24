@@ -23,9 +23,8 @@ final class ApcuStorage implements StorageInterface
      * So use it to improve precision.
      */
     public function __construct(
-        private int $fixPrecisionRate = self::DEFAULT_FIX_PRECISION_RATE
-    ) {
-    }
+        private int $fixPrecisionRate = self::DEFAULT_FIX_PRECISION_RATE,
+    ) {}
 
     public function saveIfNotExists(string $key, float $value, int $ttl): bool
     {

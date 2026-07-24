@@ -12,10 +12,6 @@ abstract class StorageTest extends TestCase
 {
     protected const DEFAULT_TTL = 86400;
 
-    abstract protected function getStorage(): StorageInterface;
-
-    abstract protected function clearStorage(): bool;
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -67,9 +63,13 @@ abstract class StorageTest extends TestCase
             'exists_key',
             $oldValue,
             $newValue,
-            self::DEFAULT_TTL
+            self::DEFAULT_TTL,
         );
 
         $this->assertTrue($result);
     }
+
+    abstract protected function getStorage(): StorageInterface;
+
+    abstract protected function clearStorage(): bool;
 }

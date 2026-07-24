@@ -6,22 +6,23 @@ namespace Yiisoft\Yii\RateLimiter\Policy;
 
 use Closure;
 use Psr\Http\Message\ServerRequestInterface;
+use InvalidArgumentException;
+
+use function is_string;
 
 final class LimitCallback implements LimitPolicyInterface
 {
     /**
      * @psalm-param Closure(ServerRequestInterface) $receiver
      */
-    public function __construct(private Closure $receiver)
-    {
-    }
+    public function __construct(private Closure $receiver) {}
 
     public function fingerprint(ServerRequestInterface $request): string
     {
         $id = ($this->receiver)($request);
 
         if (!is_string($id) || '' === $id) {
-            throw new \InvalidArgumentException('The id must be a non-empty-string.');
+            throw new InvalidArgumentException('The id must be a non-empty-string.');
         }
 
         return $id;

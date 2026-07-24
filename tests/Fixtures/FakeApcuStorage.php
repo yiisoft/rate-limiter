@@ -17,20 +17,19 @@ final class FakeApcuStorage implements StorageInterface
     public function __construct(
         private int $dirtyReadCount = self::DEFAULT_DIRTY_READ_COUNT,
         private int $fixPrecisionRate = self::DEFAULT_FIX_PRECISION_RATE,
-    ) {
-    }
+    ) {}
 
     public function saveIfNotExists(string $key, float $value, int $ttl): bool
     {
         $value = (int) ($value * $this->fixPrecisionRate);
-        return (bool)apcu_add($key, $value, $ttl);
+        return (bool) apcu_add($key, $value, $ttl);
     }
 
     public function saveCompareAndSwap(string $key, float $oldValue, float $newValue, int $ttl): bool
     {
         $oldValue = (int) ($oldValue * $this->fixPrecisionRate);
         $newValue = (int) ($newValue * $this->fixPrecisionRate);
-        return  (bool)apcu_cas($key, $oldValue, $newValue);
+        return  (bool) apcu_cas($key, $oldValue, $newValue);
     }
 
     public function get(string $key): ?float
