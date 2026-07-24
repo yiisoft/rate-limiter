@@ -43,7 +43,7 @@ final class MiddlewareTest extends TestCase
                 'X-Rate-Limit-Remaining' => ['99'],
                 'X-Rate-Limit-Reset' => ['100'],
             ],
-            $response->getHeaders()
+            $response->getHeaders(),
         );
     }
 
@@ -61,7 +61,7 @@ final class MiddlewareTest extends TestCase
                 'X-Rate-Limit-Remaining' => ['1'],
                 'X-Rate-Limit-Reset' => ['100'],
             ],
-            $response->getHeaders()
+            $response->getHeaders(),
         );
 
         // first denied request
@@ -73,7 +73,7 @@ final class MiddlewareTest extends TestCase
                 'X-Rate-Limit-Remaining' => ['0'],
                 'X-Rate-Limit-Reset' => ['100'],
             ],
-            $response->getHeaders()
+            $response->getHeaders(),
         );
 
         $response
@@ -92,7 +92,7 @@ final class MiddlewareTest extends TestCase
         // last allowed request
         $response = $middleware->process(
             $this->createRequest(Method::GET, '/', ['REMOTE_ADDR' => '193.186.62.12']),
-            $this->createRequestHandler()
+            $this->createRequestHandler(),
         );
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -104,7 +104,7 @@ final class MiddlewareTest extends TestCase
         // first denied request
         $response = $middleware->process(
             $this->createRequest(Method::GET, '/', ['REMOTE_ADDR' => '193.186.62.12']),
-            $this->createRequestHandler()
+            $this->createRequestHandler(),
         );
 
         $headers = $response->getHeaders();
@@ -116,7 +116,7 @@ final class MiddlewareTest extends TestCase
         // second denied request for other user
         $response = $middleware->process(
             $this->createRequest(Method::GET, '/', ['REMOTE_ADDR' => '193.186.62.13']),
-            $this->createRequestHandler()
+            $this->createRequestHandler(),
         );
 
         $headers = $response->getHeaders();
@@ -134,7 +134,7 @@ final class MiddlewareTest extends TestCase
         // last allowed request
         $response = $middleware->process(
             $this->createRequest(Method::GET, '/', ['REMOTE_ADDR' => '193.186.62.12']),
-            $this->createRequestHandler()
+            $this->createRequestHandler(),
         );
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -146,7 +146,7 @@ final class MiddlewareTest extends TestCase
         // first denied request
         $response = $middleware->process(
             $this->createRequest(Method::GET, '/', ['REMOTE_ADDR' => '193.186.62.12']),
-            $this->createRequestHandler()
+            $this->createRequestHandler(),
         );
 
         $headers = $response->getHeaders();
@@ -158,7 +158,7 @@ final class MiddlewareTest extends TestCase
         // second not denied request for other user
         $response = $middleware->process(
             $this->createRequest(Method::GET, '/', ['REMOTE_ADDR' => '193.186.62.13']),
-            $this->createRequestHandler()
+            $this->createRequestHandler(),
         );
 
         $headers = $response->getHeaders();
@@ -169,7 +169,7 @@ final class MiddlewareTest extends TestCase
 
         $response = $middleware->process(
             $this->createRequest(Method::GET, '/', ['REMOTE_ADDR' => '193.186.62.13']),
-            $this->createRequestHandler()
+            $this->createRequestHandler(),
         );
 
         $headers = $response->getHeaders();
@@ -185,7 +185,7 @@ final class MiddlewareTest extends TestCase
         $counter = new Counter(new SimpleCacheStorage(new ArrayCache()), 2, 5);
         $middleware = $this->createRateLimiter(
             $counter,
-            new LimitCallback(fn (ServerRequestInterface $_request): string => time() . uniqid() . uniqid())
+            new LimitCallback(fn(ServerRequestInterface $_request): string => time() . uniqid() . uniqid()),
         );
 
         for ($i = 0; $i < 10; $i++) {
@@ -203,7 +203,7 @@ final class MiddlewareTest extends TestCase
         $counter = new Counter(new SimpleCacheStorage(new ArrayCache()), 2, 5);
         $middleware = $this->createRateLimiter(
             $counter,
-            new LimitCallback(fn (ServerRequestInterface $_request): string => 'id')
+            new LimitCallback(fn(ServerRequestInterface $_request): string => 'id'),
         );
 
         $response = $middleware->process($this->createRequest(), $this->createRequestHandler());
@@ -237,21 +237,21 @@ final class MiddlewareTest extends TestCase
             86400,
             'rate-limiter-',
             $timer,
-            1
+            1,
         );
         $middleware = $this->createRateLimiter($counter, new LimitAlways());
         $middleware->process(
             $this->createRequest(Method::GET, '/', ['REMOTE_ADDR' => '193.186.62.12']),
-            $this->createRequestHandler()
+            $this->createRequestHandler(),
         );
         $middleware->process(
             $this->createRequest(Method::GET, '/', ['REMOTE_ADDR' => '193.186.62.12']),
-            $this->createRequestHandler()
+            $this->createRequestHandler(),
         );
 
         $response = $middleware->process(
             $this->createRequest(Method::GET, '/', ['REMOTE_ADDR' => '193.186.62.12']),
-            $this->createRequestHandler()
+            $this->createRequestHandler(),
         );
 
         $this->assertEquals(Status::OK, $response->getStatusCode());
@@ -269,33 +269,33 @@ final class MiddlewareTest extends TestCase
             86400,
             'rate-limiter-',
             $timer,
-            1
+            1,
         );
         $middleware = $this->createRateLimiter(
             $counter,
             new LimitAlways(),
-            new class () implements MiddlewareInterface {
+            new class implements MiddlewareInterface {
                 public function process(
                     ServerRequestInterface $request,
-                    RequestHandlerInterface $handler
+                    RequestHandlerInterface $handler,
                 ): ResponseInterface {
                     $response = $handler->handle($request);
                     return $response->withHeader('test', 'hello');
                 }
-            }
+            },
         );
         $middleware->process(
             $this->createRequest(Method::GET, '/', ['REMOTE_ADDR' => '193.186.62.12']),
-            $this->createRequestHandler()
+            $this->createRequestHandler(),
         );
         $middleware->process(
             $this->createRequest(Method::GET, '/', ['REMOTE_ADDR' => '193.186.62.12']),
-            $this->createRequestHandler()
+            $this->createRequestHandler(),
         );
 
         $response = $middleware->process(
             $this->createRequest(Method::GET, '/', ['REMOTE_ADDR' => '193.186.62.12']),
-            $this->createRequestHandler()
+            $this->createRequestHandler(),
         );
 
         $this->assertSame(200, $response->getStatusCode());
@@ -315,7 +315,7 @@ final class MiddlewareTest extends TestCase
     private function createRequest(
         string $method = Method::GET,
         string $uri = '/',
-        array $params = []
+        array $params = [],
     ): ServerRequestInterface {
         return new ServerRequest($method, $uri, [], null, '1.1', $params);
     }
@@ -323,13 +323,13 @@ final class MiddlewareTest extends TestCase
     private function createRateLimiter(
         CounterInterface $counter,
         ?LimitPolicyInterface $limitingPolicy = null,
-        ?MiddlewareInterface $failStoreUpdatedDataMiddleware = null
+        ?MiddlewareInterface $failStoreUpdatedDataMiddleware = null,
     ): LimitRequestsMiddleware {
         return new LimitRequestsMiddleware(
             $counter,
             new Psr17Factory(),
             $limitingPolicy,
-            $failStoreUpdatedDataMiddleware
+            $failStoreUpdatedDataMiddleware,
         );
     }
 }

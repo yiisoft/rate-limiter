@@ -49,7 +49,7 @@ final class Counter implements CounterInterface
         int $periodInSeconds,
         private int $storageTtlInSeconds = self::DEFAULT_TTL,
         private string $storagePrefix = self::ID_PREFIX,
-        TimerInterface|null $timer = null,
+        ?TimerInterface $timer = null,
         private int $maxCasAttempts = self::DEFAULT_MAX_CAS_ATTEMPTS,
     ) {
         if ($limit < 1) {
@@ -81,7 +81,7 @@ final class Counter implements CounterInterface
 
             $theoreticalNextIncrementTime = $this->calculateTheoreticalNextIncrementTime(
                 $lastIncrementTimeInMilliseconds,
-                $lastStoredTheoreticalNextIncrementTime
+                $lastStoredTheoreticalNextIncrementTime,
             );
 
             $remaining = $this->calculateRemaining($lastIncrementTimeInMilliseconds, $theoreticalNextIncrementTime);
@@ -94,7 +94,7 @@ final class Counter implements CounterInterface
             $isStored = $this->storeTheoreticalNextIncrementTime(
                 $id,
                 $theoreticalNextIncrementTime,
-                $lastStoredTheoreticalNextIncrementTime
+                $lastStoredTheoreticalNextIncrementTime,
             );
             if ($isStored) {
                 break;
@@ -116,7 +116,7 @@ final class Counter implements CounterInterface
      */
     private function calculateTheoreticalNextIncrementTime(
         float $lastIncrementTimeInMilliseconds,
-        ?float $storedTheoreticalNextIncrementTime
+        ?float $storedTheoreticalNextIncrementTime,
     ): float {
         return (
             $storedTheoreticalNextIncrementTime === null
@@ -130,7 +130,7 @@ final class Counter implements CounterInterface
      */
     private function calculateRemaining(
         float $lastIncrementTimeInMilliseconds,
-        float $theoreticalNextIncrementTime
+        float $theoreticalNextIncrementTime,
     ): int {
         $incrementAllowedAt = $theoreticalNextIncrementTime - $this->periodInMilliseconds;
 
@@ -150,21 +150,21 @@ final class Counter implements CounterInterface
     private function storeTheoreticalNextIncrementTime(
         string $id,
         float $theoreticalNextIncrementTime,
-        ?float $lastStoredTheoreticalNextIncrementTime
+        ?float $lastStoredTheoreticalNextIncrementTime,
     ): bool {
         if ($lastStoredTheoreticalNextIncrementTime !== null) {
             return $this->storage->saveCompareAndSwap(
                 $this->getStorageKey($id),
                 $lastStoredTheoreticalNextIncrementTime,
                 $theoreticalNextIncrementTime,
-                $this->storageTtlInSeconds
+                $this->storageTtlInSeconds,
             );
         }
 
         return $this->storage->saveIfNotExists(
             $this->getStorageKey($id),
             $theoreticalNextIncrementTime,
-            $this->storageTtlInSeconds
+            $this->storageTtlInSeconds,
         );
     }
 

@@ -14,8 +14,6 @@ use Yiisoft\Yii\RateLimiter\Tests\Support\Assert;
 
 abstract class BaseCounterTest extends TestCase
 {
-    abstract protected function getStorage(): StorageInterface;
-
     public function testStatisticsShouldBeCorrectWhenLimitIsNotReached(): void
     {
         $counter = new Counter($this->getStorage(), 2, 5);
@@ -61,7 +59,7 @@ abstract class BaseCounterTest extends TestCase
             1,
             86400,
             'rate-limiter-',
-            $timer
+            $timer,
         );
 
         // Start with the limit reached.
@@ -88,7 +86,7 @@ abstract class BaseCounterTest extends TestCase
             1,
             1,
             'rate-limiter-',
-            new FrozenTimeTimer()
+            new FrozenTimeTimer(),
         );
 
         $counter->hit('test');
@@ -104,4 +102,6 @@ abstract class BaseCounterTest extends TestCase
 
         $this->assertSame('rate-limiter-key', Assert::invokeMethod($counter, 'getStorageKey', ['key']));
     }
+
+    abstract protected function getStorage(): StorageInterface;
 }

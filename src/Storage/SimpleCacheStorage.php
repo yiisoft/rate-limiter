@@ -11,9 +11,7 @@ use function is_int;
 
 final class SimpleCacheStorage implements StorageInterface
 {
-    public function __construct(private CacheInterface $cache)
-    {
-    }
+    public function __construct(private CacheInterface $cache) {}
 
     public function saveIfNotExists(string $key, float $value, int $ttl): bool
     {

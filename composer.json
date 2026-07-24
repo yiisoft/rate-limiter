@@ -42,14 +42,16 @@
     },
     "require-dev": {
         "ext-apcu": "*",
-        "maglnet/composer-require-checker": "^4.4",
+        "bamarni/composer-bin-plugin": "^1.9.1",
+        "friendsofphp/php-cs-fixer": "^3.95",
         "nyholm/psr7": "^1.0",
         "phpunit/phpunit": "^9.5",
         "rector/rector": "^2.0.2",
         "roave/infection-static-analysis-plugin": "^1.16",
         "spatie/phpunit-watcher": "^1.23",
         "vimeo/psalm": "^4.30 || ^5.13 || ^6.16.1",
-        "yiisoft/cache": "^3.0"
+        "yiisoft/cache": "^3.0",
+        "yiisoft/code-style": "^1.0"
     },
     "suggest": {
         "ext-apcu": "To use APCu storage"
@@ -65,15 +67,25 @@
         }
     },
     "scripts": {
+        "cs-fix": "php-cs-fixer fix",
+        "psalm": "psalm",
+        "rector": "rector",
         "test": "phpunit --testdox --no-interaction",
-        "test-watch": "phpunit-watcher watch",
-        "psalm": "psalm"
+        "test-watch": "phpunit-watcher watch"
     },
     "config": {
         "sort-packages": true,
         "allow-plugins": {
             "infection/extension-installer": true,
-            "composer/package-versions-deprecated": true
+            "composer/package-versions-deprecated": true,
+            "bamarni/composer-bin-plugin": true
+        }
+    },
+    "extra": {
+        "bamarni-bin": {
+            "bin-links": true,
+            "target-directory": "tools",
+            "forward-command": true
         }
     }
 }
