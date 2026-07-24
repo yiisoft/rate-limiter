@@ -13,11 +13,6 @@ use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FrozenTimeTimer;
 
 final class CounterTest extends BaseCounterTest
 {
-    protected function getStorage(): StorageInterface
-    {
-        return new SimpleCacheStorage(new ArrayCache());
-    }
-
     /**
      * Testing that in concurrent scenarios, when dirty reads occur,
      * the current limiter cannot be as expected By 'SimpleCacheStorage'.
@@ -33,7 +28,7 @@ final class CounterTest extends BaseCounterTest
             1,
             86400,
             'rate-limiter-',
-            $timer
+            $timer,
         );
 
         $totalHits = 0;
@@ -49,5 +44,10 @@ final class CounterTest extends BaseCounterTest
         } while (true);
 
         $this->assertGreaterThan($limitHits, $totalHits);
+    }
+
+    protected function getStorage(): StorageInterface
+    {
+        return new SimpleCacheStorage(new ArrayCache());
     }
 }

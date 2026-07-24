@@ -17,8 +17,7 @@ final class FakeSimpleCacheStorage implements StorageInterface
     public function __construct(
         private CacheInterface $cache,
         private int $dirtyReadCount = self::DEFAULT_DIRTY_READ_COUNT,
-    ) {
-    }
+    ) {}
 
     public function saveIfNotExists(string $key, mixed $value, int $ttl): bool
     {
@@ -43,7 +42,7 @@ final class FakeSimpleCacheStorage implements StorageInterface
             return null;
         }
 
-        $readValue = (float)$readValue;
+        $readValue = (float) $readValue;
         $this->dirtyReadValue = $readValue;
         $this->remainingDirtyReadCount = $this->dirtyReadCount;
 

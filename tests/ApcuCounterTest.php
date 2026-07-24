@@ -12,16 +12,6 @@ use Yiisoft\Yii\RateLimiter\Tests\Fixtures\FrozenTimeTimer;
 
 final class ApcuCounterTest extends BaseCounterTest
 {
-    protected function getStorage(): StorageInterface
-    {
-        return new ApcuStorage();
-    }
-
-    protected function clearStorage(): bool
-    {
-        return apcu_clear_cache();
-    }
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -44,7 +34,7 @@ final class ApcuCounterTest extends BaseCounterTest
             1,
             86400,
             'rate-limiter-',
-            $timer
+            $timer,
         );
 
         $totalHits = 0;
@@ -74,7 +64,7 @@ final class ApcuCounterTest extends BaseCounterTest
             86400,
             'rate-limiter-',
             $timer,
-            1
+            1,
         );
 
         $counter->hit('key');
@@ -82,5 +72,15 @@ final class ApcuCounterTest extends BaseCounterTest
 
         $counterState = $counter->hit('key');
         $this->assertTrue($counterState->isFailStoreUpdatedData());
+    }
+
+    protected function getStorage(): StorageInterface
+    {
+        return new ApcuStorage();
+    }
+
+    protected function clearStorage(): bool
+    {
+        return apcu_clear_cache();
     }
 }

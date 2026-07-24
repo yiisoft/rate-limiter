@@ -1,0 +1,22 @@
+name: Rector and PHP CS Fixer
+
+on:
+  pull_request:
+    paths: &paths
+      - 'src/**'
+      - 'tests/**'
+      - '.php-cs-fixer.dist.php'
+      - 'rector.php'
+      - 'composer.json'
+      - '.github/workflows/rector-cs.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  rector-cs:
+    permissions:
+      contents: write  # Required to commit formatting fixes back to the PR
+    uses: yiisoft/actions/.github/workflows/rector-cs.yml@master
+    with:
+      php: '8.0'

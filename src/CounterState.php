@@ -19,9 +19,8 @@ final class CounterState
         private int $limit,
         private int $remaining,
         private int $resetTime,
-        private bool $isFailStoreUpdatedData = false
-    ) {
-    }
+        private bool $isFailStoreUpdatedData = false,
+    ) {}
 
     /**
      * @return int The maximum number of requests allowed with a time period.
