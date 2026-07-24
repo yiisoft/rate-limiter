@@ -15,6 +15,10 @@ name: static analysis
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   psalm:
     uses: yiisoft/actions/.github/workflows/psalm.yml@master

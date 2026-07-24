@@ -1,11 +1,21 @@
-on:
-  - pull_request
-  - push
-
 name: backwards compatibility
+
+on:
+  pull_request:
+    paths: &paths
+      - 'src/**'
+      - 'composer.json'
+      - '.github/workflows/bc.yml'
+  push:
+    branches: ['master']
+    paths: *paths
 
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   roave_bc_check:
