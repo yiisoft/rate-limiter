@@ -22,7 +22,7 @@ If too many requests are received from a user within the stated period of the ti
 
 ## Requirements
 
-- PHP 8.0 or higher.
+- PHP 8.0 - 8.5.
 
 ## Installation
 
