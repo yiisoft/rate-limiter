@@ -10,4 +10,4 @@ return (new Configuration())
     ->setFileExtensions(['php'])
     ->addPathToScan(__DIR__ . '/src', isDev: false)
     ->addPathToScan(__DIR__ . '/tests', isDev: true)
-    ->ignoreErrorsOnPackages(['psr/http-message-implementation'], [ErrorType::UNUSED_DEPENDENCY]);
+    ->ignoreErrorsOnPackages(['psr/http-message-implementation', 'ext-apcu'], [ErrorType::UNUSED_DEPENDENCY]);
