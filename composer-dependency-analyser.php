@@ -12,5 +12,5 @@ return (new Configuration())
     ->addPathToScan(__DIR__ . '/tests', isDev: true)
     // psr/http-message-implementation is a virtual package (implementation marker), it has no classes to detect usage of
     ->ignoreErrorsOnPackage('psr/http-message-implementation', [ErrorType::UNUSED_DEPENDENCY])
-    // ext-apcu is optional, so its usage in ApcuStorage can't always be detected
-    ->ignoreErrorsOnExtension('ext-apcu', [ErrorType::UNUSED_DEPENDENCY]);
+    // ext-apcu is optional, so it's intentionally kept in require-dev instead of require
+    ->ignoreErrorsOnExtension('ext-apcu', [ErrorType::DEV_DEPENDENCY_IN_PROD]);
