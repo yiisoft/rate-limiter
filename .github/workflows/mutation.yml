@@ -22,7 +22,7 @@ concurrency:
 
 jobs:
   mutation:
-    uses: yiisoft/actions/.github/workflows/roave-infection.yml@master
+    uses: yiisoft/actions/.github/workflows/infection.yml@master
     with:
       extensions: apcu
       ini-values: apc.enabled=1,apc.shm_size=32M,apc.enable_cli=1
@@ -30,5 +30,6 @@ jobs:
         ['ubuntu-latest']
       php: >-
         ['8.1']
+      infection-args: --ignore-msi-with-no-mutations
     secrets:
       STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
